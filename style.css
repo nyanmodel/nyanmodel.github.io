@@ -103,7 +103,7 @@ header{
 	box-shadow: 0px 0px 10px rgba(0,0,0,.8) inset;
 
 	/* background-color: white; */
-	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(https://github.com/nyanmodel/nyanmodel.github.io/blob/master/night.jpg);
+	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(night.jpg);
 	background-size: cover;
 	background-attachment: fixed;
 
@@ -195,7 +195,7 @@ img#news{
 }
 
 div#newsDetail{
-	
+
 }
 
 img#icon{
@@ -229,7 +229,7 @@ h1{
 	margin-left: 0;
 	margin-right: 0;
 	color: white;
-	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(https://github.com/nyanmodel/nyanmodel.github.io/blob/master/night.jpg);
+	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(night.jpg);
 	background-size: cover;
 	background-attachment: fixed;
 	text-align: center;
@@ -358,7 +358,7 @@ footer {
   font-size: 15px;
   font-family: Helvetica;
   text-align: center;
-	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(https://github.com/nyanmodel/nyanmodel.github.io/blob/master/night.jpg);
+	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(night.jpg);
 	background-size: cover;
 	background-attachment: fixed;
   color: white;
@@ -462,7 +462,7 @@ header{
 	box-shadow: 0px 0px 10px rgba(0,0,0,.8) inset;
 
 	/* background-color: white; */
-	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(https://github.com/nyanmodel/nyanmodel.github.io/blob/master/night.jpg);
+	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(night.jpg);
 	background-size: cover;
 	background-position: bottom;
 
@@ -556,7 +556,7 @@ h1{
 	margin-left: 0;
 	margin-right: 0;
 	color: white;
-	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(https://github.com/nyanmodel/nyanmodel.github.io/blob/master/night.jpg);
+	background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(night.jpg);
 	background-size: cover;
 	background-position: bottom;
 	text-align: center;
@@ -669,7 +669,7 @@ footer {
   font-size: 13px;
   font-family: Helvetica, san-serif;
   text-align: center;
-  background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(https://github.com/nyanmodel/nyanmodel.github.io/blob/master/night.jpg);
+  background:linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)),url(night.jpg);
 	background-size: cover;
 	background-position: bottom;
   color: white;
