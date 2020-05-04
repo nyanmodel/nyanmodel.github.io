@@ -123,7 +123,7 @@ html {
 		height: 100vh;
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(rishiri.jpg);
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
 		background-size: cover;
 		background-attachment: fixed;
 		white-space: nowrap;
@@ -234,7 +234,7 @@ html {
 		margin: 0;
 		color: #000;
 		/* background: linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)), url(night.jpg); */
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(rishiri.jpg);
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
 		background-size: cover;
 		background-attachment: fixed;
 		text-align: center;
@@ -323,7 +323,7 @@ html {
 		font-family: Helvetica;
 		text-align: center;
 		/* background: linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)), url(night.jpg); */
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(rishiri.jpg);
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
 		background-size: cover;
 		background-attachment: fixed;
 		color: #000;
@@ -362,7 +362,7 @@ html {
 		height: 80vh;
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(rishiri.jpg);
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
 		background-size: cover;
 		background-position: bottom;
 		white-space: nowrap;
@@ -467,7 +467,7 @@ html {
 		margin-left: 0;
 		margin-right: 0;
 		color: #333;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(rishiri.jpg);
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
 		background-size: cover;
 		background-position: center;
 		text-align: center;
@@ -559,7 +559,7 @@ html {
 		font-size: 13px;
 		font-family: Helvetica, san-serif;
 		text-align: center;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(rishiri.jpg);
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
 		background-size: cover;
 		background-position: bottom;
 		color: #333;
