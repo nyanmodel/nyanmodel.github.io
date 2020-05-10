@@ -1,8 +1,4 @@
 html {
-	user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
-	-ms-user-select: none;
 	scroll-behavior: smooth;
 }
 
@@ -12,7 +8,7 @@ html {
 }
 
 @media screen and (min-width: 701px) {
-	a:link {
+	/* a:link {
 		color: rgb(80, 80, 80);
 		text-decoration: none;
 		transition: 0.2s;
@@ -29,7 +25,7 @@ html {
 	a:active {
 		color: deepskyblue;
 		text-decoration: none;
-	}
+	} */
 	/* #loading {
 		position: absolute;
 		top: 0px;
@@ -103,6 +99,10 @@ html {
 		font-family: sans-serif;
 		background-color: #eee;
 		color: #222;
+		/* user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none; */
 	}
 	section {
 		margin: 20px 15%;
@@ -111,7 +111,6 @@ html {
 		font-size: 1rem;
 		word-wrap: break-word;
 		line-height: 40px;
-		overflow: hidden;
 		background-color: #fff;
 		box-shadow: 5px 5px 10px rgba(0, 0, 0, .3);
 	}
@@ -127,6 +126,10 @@ html {
 		background-size: cover;
 		background-attachment: fixed;
 		white-space: nowrap;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 	}
 	#toptext {
 		margin: 5%;
@@ -154,6 +157,10 @@ html {
 		-webkit-animation: blink 1.0s ease-in-out infinite alternate;
 		-moz-animation: blink 1.0s ease-in-out infinite alternate;
 		animation: blink 1.0s ease-in-out infinite alternate;
+		user-select: none;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
 	}
 	#sdText {
 		font-family: Helvetica, sans-serif;
@@ -187,12 +194,38 @@ html {
 			opacity: 1;
 		}
 	}
+	#nav {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		justify-content: space-between;
+	}
+	.nav_btn {
+		font-family: 'Questrial', 'Helvetica', sans-serif;
+		font-weight: normal;
+		padding: 10px;
+		flex-grow: 1;
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
+		background-size: cover;
+		background-attachment: fixed;
+		text-align: center;
+	}
+	.nav_btn a {
+		display: block;
+		text-decoration: none;
+		color: #000;
+	}
+	.nav_btn:hover {
+		background: rgb(255, 255, 255);
+	}
 	img.cont {
 		max-width: 80%;
 		max-height: 100vh;
 		margin: 10px 0px;
-		border-radius: 10px;
-		box-shadow: 10px 10px 10px rgba(0, 0, 0, 0.5);
+		padding: 10px;
+		/* border-radius: 10px; */
+		box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
 	}
 	img#news {
 		height: 200px;
@@ -254,41 +287,44 @@ html {
 		border: 0;
 		border-bottom: 1px dashed #8c8b8b; 
 	} 
-	#update {
+	#links_contents {
 		padding: 30px;
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
 	}
-	ul {
-		margin: 30px 0px;
-	}
-	li {
-		list-style: none;
-	}
-	li:before {
-		font-family: haranyan;
-		content: "③ ";
-	}
-	iframe#hirasawa {
-		float: right;
-	}
-	#links {
-		padding: 30px;
-	}
-	#links button {
-		font-size: 1rem;
+	#links_contents button {
+		font-size: .8rem;
 		font-family: Helvetica, sans-serif;
 		color: #fff;
+		margin: 1em;
 		padding: 10px;
-		margin: 10px;
 		display: inline-block;
 		transition: .2s background-color: white;
 		border-radius: 5px;
 		border: 0;
 	}
-	#links button:hover {
+	#links_contents button:hover {
 		transform: rotate(5deg);
 		transition: .2s;
-		background-color: #00C998;
-		color: white;
+	}
+	#update_contents {
+		padding: 30px;
+	}
+	ul.hblist {
+		margin: 30px 0px;
+	}
+	ul.hblist li {
+		list-style: none;
+	}
+	ul.hblist li:before {
+		font-family: haranyan;
+		content: "③ ";
+	}
+	
+	iframe#hirasawa {
+		float: right;
+		margin: 0 10px;
 	}
 	.pagetop {
 		position: fixed;
@@ -498,6 +534,20 @@ html {
 		font-size: 17px;
 		word-wrap: break-word;
 	}
+	#links_contents {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+	#links_contents button {
+		font-size: 15px;
+		color: #fff;
+		padding: 10px;
+		margin: 10px;
+		width: 40%;
+		border-radius: 5px;
+		border: 0;
+	}
 	iframe#hirasawa {
 		display: none;
 	}
@@ -520,15 +570,6 @@ html {
 	}
 	#update {
 		margin: 3%;
-	}
-	#links button {
-		font-size: 20px;
-		color: #fff;
-		padding: 10px;
-		margin: 10px;
-		display: inline-block;
-		border-radius: 5px;
-		border: 0;
 	}
 	/* .pagetop {
 		position: fixed;
