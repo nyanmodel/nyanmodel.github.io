@@ -464,6 +464,28 @@ html {
 			opacity: 1;
 		}
 	}
+	#nav {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		justify-content: space-between;
+	}
+	.nav_btn {
+		font-family: 'Questrial', 'Helvetica', sans-serif;
+		font-weight: normal;
+		padding: 20px;
+		flex-grow: 1;
+		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/rishiri.jpg);
+		background-size: cover;
+		background-attachment: fixed;
+		text-align: center;
+	}
+	.nav_btn a {
+		display: block;
+		text-decoration: none;
+		color: #000;
+	}
 	img.cont {
 		max-width: 100%;
 		max-height: 100vh;
@@ -526,8 +548,7 @@ html {
 	section {
 		margin-left: 0;
 		margin-right: 0;
-		margin-top: 20px;
-		margin-bottom: 30px;
+		margin: 20px 0;
 		align-content: center;
 		font-weight: 500;
 		font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
@@ -551,15 +572,15 @@ html {
 	iframe#hirasawa {
 		display: none;
 	}
-	ul {
+	ul.hblist {
 		margin: 0;
 		padding: 3%;
 	}
-	li {
+	ul.hblist li {
 		list-style: none;
 		margin: 3px 0px;
 	}
-	li:before {
+	ul.hblist li:before {
 		font-family: haranyan;
 		content: "③ ";
 	}
@@ -568,7 +589,7 @@ html {
 		font-size: 15px;
 		line-height: 30px;
 	}
-	#update {
+	#update_contents {
 		margin: 3%;
 	}
 	/* .pagetop {
