@@ -300,7 +300,8 @@ html {
 		margin: 1em;
 		padding: 10px;
 		display: inline-block;
-		transition: .2s background-color: white;
+		transition: .2s;
+		background-color: white;
 		border-radius: 5px;
 		border: 0;
 	}
@@ -312,7 +313,8 @@ html {
 		padding: 30px;
 	}
 	ul.hblist {
-		margin: 30px 0px;
+		padding: 30px 50px;
+		margin: 0;
 	}
 	ul.hblist li {
 		list-style: none;
