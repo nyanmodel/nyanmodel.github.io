@@ -478,9 +478,11 @@ html {
 		font-weight: normal;
 		padding: 20px;
 		flex-grow: 1;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		border-style: solid;
+		border-width: 2px 0;
+		border-color: #333;
 		background-size: cover;
-		background-attachment: fixed;
+		background-position: center;
 		text-align: center;
 	}
 	.nav_btn a {
