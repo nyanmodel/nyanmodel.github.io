@@ -107,7 +107,7 @@ html {
 	section {
 		margin: 20px 15%;
 		align-content: center;
-		font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
+		font-family: "Shippori Mincho","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
 		font-size: 1rem;
 		word-wrap: break-word;
 		line-height: 40px;
@@ -222,10 +222,11 @@ html {
 	img.cont {
 		max-width: 80%;
 		max-height: 100vh;
-		margin: 10px 0px;
+		margin: 10px 10%;
 		padding: 10px;
 		/* border-radius: 10px; */
 		box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+		
 	}
 	img#news {
 		height: 200px;
@@ -275,7 +276,8 @@ html {
 	h2 {
 		font-size: 20px;
 		font-weight: 300;
-		font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
+		font-family: "Stick", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", sans-serif;
+		font-weight: 600;
 		margin: 10px 10px;
 		padding: 15px;
 		border-bottom-style: solid;
@@ -537,7 +539,7 @@ html {
 	h2 {
 		font-size: 18px;
 		font-weight: 300;
-		font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;;
+		font-family: "Stick", "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;;
 		margin: 10px 0px;
 		border-style: solid;
 		border-width: 0 0 2px 0;
@@ -555,7 +557,7 @@ html {
 		margin: 20px 0;
 		align-content: center;
 		font-weight: 500;
-		font-family: "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
+		font-family: "Shippori Mincho","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
 		font-size: 17px;
 		word-wrap: break-word;
 	}
