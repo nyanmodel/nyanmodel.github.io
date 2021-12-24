@@ -1,0 +1,106 @@
+body{
+    /* background-color: black; */
+    background: linear-gradient(to top,  rgba(0,0,0,0.8) 30%, rgba(0,0,0,1)), url(unspoilt_blue.png);
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+}
+
+html:before,
+html:after,
+body:before,
+body:after {
+  content: "";
+  background: rgb(111, 216, 235);
+  position: fixed;
+  display: block;
+  z-index: 1;
+}
+
+/* 上 */
+html:before {
+  height: 10px; 
+  width: 100vw;
+  left: 0;
+  top: 0;
+}
+
+/* 右 */
+html:after {
+  width: 10px;
+  height: 100vh;
+  right: 0;
+  top: 0;
+}
+
+/* 下 */
+body:before {
+  height: 10px;
+  width: 100vw;
+  bottom: 0;
+  left: 0;
+}
+
+/* 左 */
+body:after {
+  width: 10px;
+  height: 100vh;
+  top: 0;
+  left: 0;
+}
+
+.contents{
+    margin: 5em 10%;
+    color: white;
+    font-family: "Shippori Mincho", serif;
+}
+
+.block{
+  margin: 3em 0;
+}
+
+#title{
+  padding: 3% 0;
+  background-color: rgb(111, 216, 235);
+  color: black;
+  text-align: center;
+  font-size: 5em;
+  width: 100%;
+  font-family: 'Questrial', 'Helvetica', sans-serif;
+}
+
+p{
+  margin: 2em 0;
+  line-height: 2em;
+}
+
+p.sabi{
+  padding: 0 2em;
+}
+
+h1{
+  font-family: 'Questrial', 'Helvetica', sans-serif;
+  margin: 0;
+}
+
+h2{
+  font-family: 'Questrial', 'Helvetica', sans-serif;
+  margin: 0.3em 0;
+  color: #999;
+}
+
+h4{
+  font-family: 'Questrial', 'Helvetica', sans-serif;
+  margin: 0.5em 0;
+  color: #999;
+}
+
+footer{
+  font-family: 'Questrial', 'Helvetica', sans-serif;
+  font-size: 0.7rem;
+  color:white;
+  margin: 15px;
+  text-align: center;
+}
