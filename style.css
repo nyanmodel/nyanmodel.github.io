@@ -423,8 +423,8 @@ html {
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
 		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABpJREFUGFdjZGBg+M/AwMAIo0EMFACXwakCAKzeBAUBcR4mAAAAAElFTkSuQmCC)repeat,  url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
-		background-position: bottom center;
-		background-size: 5px, cover;
+		background-position: top, center;
+		background-size: 5px, auto 80vh;
 		background-attachment: scroll,fixed;
 		white-space: nowrap;
 	}
