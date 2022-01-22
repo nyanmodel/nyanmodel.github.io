@@ -290,7 +290,7 @@ html {
 		font-size: 30px;
 		font-weight: 300;
 		font-family: 'Questrial', 'Helvetica','Zen Kaku Gothic New', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', sans-serif;
-		margin: 10px 10px;
+		margin: 0;
 		padding: 2%;
 		/* border-bottom-style: solid;
 		border-bottom-width: 2px;
@@ -300,6 +300,7 @@ html {
 		border-color: #000;
 		border-width: 2px; */
 		box-shadow:0px 0px 8px 3px #ccc inset;
+		text-align: center;
 	}
 	hr{ 
 		border: 0;
@@ -326,6 +327,9 @@ html {
 	#links_contents button:hover {
 		transform: rotate(5deg);
 		transition: .2s;
+	}
+	.text_contents{
+		padding: 10px 0;
 	}
 	#update_contents {
 		padding: 30px;
@@ -419,6 +423,7 @@ html {
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
 		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABpJREFUGFdjZGBg+M/AwMAIo0EMFACXwakCAKzeBAUBcR4mAAAAAElFTkSuQmCC)repeat,  url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background-position: bottom center;
 		background-size: 5px, cover;
 		background-attachment: scroll,fixed;
 		white-space: nowrap;
@@ -439,7 +444,7 @@ html {
 		vertical-align: middle; */
 	}
 	#logo{
-		width: 60%;
+		width: 200px;
 	}
 	#pageTitle {
 		font-size: 3rem;
@@ -454,7 +459,7 @@ html {
 		font-size: 60px;
 		color: #fff;
 		z-index: 2;
-		top: 70vh;
+		top: 60vh;
 		left: 0;
 		right: 0;
 		-webkit-animation: blink 1.0s ease-in-out infinite alternate;
@@ -617,7 +622,7 @@ html {
 	}
 	p {
 		margin: 3%;
-		font-size: 15px;
+		font-size: 18px;
 		line-height: 30px;
 	}
 	#update_contents {
