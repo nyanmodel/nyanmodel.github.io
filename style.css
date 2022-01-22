@@ -123,9 +123,9 @@ html {
 		height: 100vh;
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
-		background-size: cover;
-		background-attachment: fixed;
+		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABpJREFUGFdjZGBg+M/AwMAIo0EMFACXwakCAKzeBAUBcR4mAAAAAElFTkSuQmCC)repeat, /*linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),*/ url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background-size: 5px, cover;
+		background-attachment: scroll,fixed;
 		white-space: nowrap;
 		user-select: none;
 		-moz-user-select: none;
@@ -133,10 +133,22 @@ html {
 		-ms-user-select: none;
 	}
 	#toptext {
-		margin: 5%;
+		margin: 0 auto;
+		height: 100vh;
+		position: relative;
+    	text-align: center;
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		z-index: 2;
+		/* text-align: center;
 		font-family: 'Questrial', 'Helvetica', sans-serif;
-		color: #000;
+		color: #000; */
 	}
+	#logo{
+		width: 20%;
+	}
+
 	#pageTitle {
 		font-size: 4rem;
 	}
@@ -149,9 +161,9 @@ html {
 		display: inline-block;
 		position: absolute;
 		text-align: center;
-		color: #000;
+		color: #fff;
 		z-index: 2;
-		top: 80vh;
+		top: 85vh;
 		left: 0;
 		right: 0;
 		bottom: 0;
@@ -207,7 +219,7 @@ html {
 		font-weight: normal;
 		padding: 10px;
 		flex-grow: 1;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
 		background-size: cover;
 		background-attachment: fixed;
 		text-align: center;
@@ -215,7 +227,7 @@ html {
 	.nav_btn a {
 		display: block;
 		text-decoration: none;
-		color: #000;
+		color: #fff;
 	}
 	.nav_btn:hover {
 		background: rgb(255, 255, 255);
@@ -267,9 +279,9 @@ html {
 		font-weight: normal;
 		padding: 30px;
 		margin: 0;
-		color: #000;
+		color: #fff;
 		/* background: linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)), url(night.jpg); */
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
 		background-size: cover;
 		background-attachment: fixed;
 		text-align: center;
@@ -277,8 +289,7 @@ html {
 	h2 {
 		font-size: 30px;
 		font-weight: 300;
-		font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", sans-serif;
-		font-weight: 600;
+		font-family: 'Questrial', 'Helvetica','Zen Kaku Gothic New', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', sans-serif;
 		margin: 10px 10px;
 		padding: 2%;
 		/* border-bottom-style: solid;
@@ -368,10 +379,10 @@ html {
 		font-family: Helvetica;
 		text-align: center;
 		/* background: linear-gradient(-45deg, rgba(0, 130, 200, 0.7), rgba(0, 200, 130, 0.7)), url(night.jpg); */
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
 		background-size: cover;
 		background-attachment: fixed;
-		color: #000;
+		color: #fff;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
 	}
 }
@@ -407,17 +418,28 @@ html {
 		height: 80vh;
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
-		background-size: cover;
-		background-position: bottom;
+		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABpJREFUGFdjZGBg+M/AwMAIo0EMFACXwakCAKzeBAUBcR4mAAAAAElFTkSuQmCC)repeat, /*linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),*/ url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background-size: 5px, cover;
+		background-attachment: scroll,fixed;
 		white-space: nowrap;
 	}
 	#toptext {
-		text-align: center;
+		margin: 0 auto;
+		height: 100vh;
+		position: relative;
+    	text-align: center;
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		z-index: 2;
+		/* text-align: center;
 		font-family: 'Questrial', 'Helvetica', sans-serif;
 		color: #333;
 		display: table-cell;
-		vertical-align: middle;
+		vertical-align: middle; */
+	}
+	#logo{
+		width: 60%;
 	}
 	#pageTitle {
 		font-size: 3rem;
@@ -426,17 +448,15 @@ html {
 		font-size: .5rem;
 	}
 	#bottomtext {
-		margin: auto;
 		display: inline-block;
 		position: absolute;
 		text-align: center;
 		font-size: 60px;
-		color: #333;
+		color: #fff;
 		z-index: 2;
-		top: 65vh;
+		top: 85vh;
 		left: 0;
 		right: 0;
-		bottom: 0;
 		-webkit-animation: blink 1.0s ease-in-out infinite alternate;
 		-moz-animation: blink 1.0s ease-in-out infinite alternate;
 		animation: blink 1.0s ease-in-out infinite alternate;
@@ -528,15 +548,15 @@ html {
 
 	h1 {
 		font-size: 2rem;
-		font-family: 'Questeial', 'Helvetica', sans-serif;
-		padding: 15px;
+		font-family: 'Questrial', 'Helvetica', sans-serif;
+		padding: 30px;
 		font-weight: normal;
 		margin-top: 10px;
 		margin-bottom: 20px;
 		margin-left: 0;
 		margin-right: 0;
-		color: #333;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		color: #fff;
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
 		background-size: cover;
 		background-position: center;
 		text-align: center;
@@ -544,7 +564,7 @@ html {
 	h2 {
 		font-size: 18px;
 		font-weight: 300;
-		font-family: "Stick", "ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;;
+		font-family: 'Questrial', 'Helvetica','Zen Kaku Gothic New', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', sans-serif;
 		margin: 10px 0px;
 		border-style: solid;
 		border-width: 0 0 2px 0;
@@ -562,7 +582,7 @@ html {
 		margin: 20px 0;
 		align-content: center;
 		font-weight: 500;
-		font-family: "Shippori Mincho","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
+		font-family: "Shippori Mincho","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo, sans-serif;
 		font-size: 17px;
 		word-wrap: break-word;
 	}
@@ -632,9 +652,9 @@ html {
 		font-size: 13px;
 		font-family: Helvetica, san-serif;
 		text-align: center;
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background: linear-gradient(0deg, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
 		background-size: cover;
 		background-position: bottom;
-		color: #333;
+		color: #fff;
 	}
 }
