@@ -230,7 +230,7 @@ html {
 		color: #fff;
 	}
 	.nav_btn:hover {
-		background: rgb(255, 255, 255);
+		background: rgb(0, 0, 0);
 	}
 	img.cont {
 		max-width: 80%;
@@ -418,14 +418,14 @@ html {
 		height: 80vh;
 		display: table;
 		box-shadow: 0px 0px 10px rgba(0, 0, 0, .8) inset;
-		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABpJREFUGFdjZGBg+M/AwMAIo0EMFACXwakCAKzeBAUBcR4mAAAAAElFTkSuQmCC)repeat, /*linear-gradient(0deg, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5)),*/ url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
+		background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAAXNSR0IArs4c6QAAABpJREFUGFdjZGBg+M/AwMAIo0EMFACXwakCAKzeBAUBcR4mAAAAAElFTkSuQmCC)repeat,  url(https://raw.githubusercontent.com/nyanmodel/nyanmodel.github.io/master/bgimage.jpg);
 		background-size: 5px, cover;
 		background-attachment: scroll,fixed;
 		white-space: nowrap;
 	}
 	#toptext {
 		margin: 0 auto;
-		height: 100vh;
+		height: 80vh;
 		position: relative;
     	text-align: center;
 		align-items: center;
@@ -454,7 +454,7 @@ html {
 		font-size: 60px;
 		color: #fff;
 		z-index: 2;
-		top: 85vh;
+		top: 70vh;
 		left: 0;
 		right: 0;
 		-webkit-animation: blink 1.0s ease-in-out infinite alternate;
