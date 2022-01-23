@@ -214,9 +214,6 @@ html {
 	/* .nav_btn:hover {
 		background: rgb(0, 0, 0);
 	} */
-	#insta_btn{
-		background:linear-gradient(45deg, rgba(254,212,117,1) 0%,rgba(229,61,93,1) 50%,rgba(194,49,134,1) 70%,rgba(156,56,187,1) 100%);
-	}
 
 	#profile_card{
 		display: flex;
