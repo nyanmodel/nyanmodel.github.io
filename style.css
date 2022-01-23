@@ -8,24 +8,6 @@ html {
 }
 
 @media screen and (min-width: 901px) {
-	/* a:link {
-		color: rgb(80, 80, 80);
-		text-decoration: none;
-		transition: 0.2s;
-	}
-	a:visited {
-		color: rgb(80, 80, 80);
-		text-decoration: none;
-	}
-	a:hover {
-		color: #00C998;
-		text-decoration: none;
-		transition: 0.2s;
-	}
-	a:active {
-		color: deepskyblue;
-		text-decoration: none;
-	} */
 	/* #loading {
 		position: absolute;
 		top: 0px;
@@ -45,7 +27,7 @@ html {
 		-o-animation: spin 1.5s linear infinite;
 		animation: spin 1.5s linear infinite;
 	} */
-	@-webkit-keyframes spin {
+	/* @-webkit-keyframes spin {
 		0% {
 			-webkit-transform: rotate(0deg);
 		}
@@ -84,7 +66,7 @@ html {
 		100% {
 			transform: rotate(360deg);
 		}
-	}
+	} */
 	/* #loader-bg {
 		position: fixed;
 		width: 100%;
@@ -109,7 +91,7 @@ html {
 		width: 900px;
 		align-content: center;
 		font-family: "Shippori Mincho","ヒラギノ角ゴ Pro W3","Hiragino Kaku Gothic Pro","メイリオ", Meiryo ,"ＭＳ Ｐゴシック", sans-serif;
-		font-size: 1.3rem;
+		font-size: 1.2rem;
 		word-wrap: break-word;
 		line-height: 40px;
 		background-color: #fff;
@@ -229,17 +211,42 @@ html {
 		text-decoration: none;
 		color: #fff;
 	}
-	.nav_btn:hover {
+	/* .nav_btn:hover {
 		background: rgb(0, 0, 0);
+	} */
+	#insta_btn{
+		background:linear-gradient(45deg, rgba(254,212,117,1) 0%,rgba(229,61,93,1) 50%,rgba(194,49,134,1) 70%,rgba(156,56,187,1) 100%);
 	}
+
+	#profile_card{
+		display: flex;
+		width: 80%;
+		margin: auto;
+
+	}
+	.profile_icon{
+		width: 30%;
+		margin: 0 40px;
+	}
+	.profile_letter{
+		width: 70%;
+		margin:40px;
+	}
+
+	.profile_letter p.name{
+		font-size: 1.3em;
+		font-weight: 500;
+		font-family: 'Zen Kaku Gothic New', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', sans-serif;
+	}
+
 	img.cont {
-		max-width: 80%;
+		/* max-width: 80%;
 		max-height: 100vh;
 		margin: 10px 10%;
 		padding: 10px;
-		/* border-radius: 10px; */
 		box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
-		border-radius: 50px;
+		border-radius: 50px; */
+		width: 100%;
 	}
 	img#news {
 		height: 200px;
@@ -265,6 +272,40 @@ html {
 		float: right;
 		margin: 0 10px;
 	}
+	
+	.gallery{
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-webkit-flex-wrap: wrap;
+		flex-wrap: wrap;
+		align-items: stretch;
+	}
+	.gallery a {
+		display: block;
+		position: relative;
+		width: 25%;
+	}
+	.gallery a::before {
+		content: "";
+		display: block;
+		padding-top: 100%;
+	  }
+
+	.gallery a img {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		object-fit: cover;
+	}
+
+	/* .gallery a:hover img{
+		opacity: 0.5;
+	} */
+
+
 
 	/* #newsDetail{
 		display: table-cell;
@@ -307,6 +348,8 @@ html {
 		border-bottom: 1px dashed #8c8b8b; 
 	} 
 	#links_contents {
+		width: 80%;
+		margin: auto;
 		padding: 30px;
 		display: flex;
 		justify-content: center;
@@ -318,6 +361,7 @@ html {
 		color: #fff;
 		margin: 1em;
 		padding: 10px;
+		width: 20%;
 		display: inline-block;
 		transition: .2s;
 		background-color: white;
@@ -395,7 +439,7 @@ html {
 /*以下よりスマホサイト用CSS*/
 
 @media screen and (max-width: 900px) {
-	a:link {
+	/* a:link {
 		color: rgb(80, 80, 80);
 		transition: 0.2s;
 		text-decoration: none;
@@ -412,7 +456,7 @@ html {
 	a:active {
 		color: deepskyblue;
 		text-decoration: none;
-	}
+	} */
 	body {
 		margin: 0;
 		font-family: sans-serif;
@@ -522,11 +566,30 @@ html {
 		text-decoration: none;
 		color: #000;
 	}
-	img.cont {
+	#profile_card{
+		display: flex;
+		flex-direction: column;
+		width: 80%;
+		margin: auto;
+	}
+	.profile_icon{
+		margin: auto;
+		text-align: center;
+	}
+	.profile_letter{
+		margin:20px 0;
+	}
+
+	.profile_letter p.name{
+		font-size: 1.3em;
+		font-weight: 500;
+		font-family: 'Zen Kaku Gothic New', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', sans-serif;
+	}
+	/* img.cont {
 		max-width: 100%;
 		max-height: 100vh;
 		border-radius: 5px;
-	}
+	} */
 	img#news {
 		height: 200px;
 		display: table-cell;
@@ -543,7 +606,36 @@ html {
 	img#photo {
 		display: none;
 	}
+	.gallery{
+		display: -webkit-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		flex-direction: row;
+		-webkit-flex-wrap: wrap;
+		flex-wrap: wrap;
+		align-items: stretch;
+	}
+	.gallery a {
+		display: block;
+		position: relative;
+		width: 50%;
+	}
+	.gallery a::before {
+		content: "";
+		display: block;
+		padding-top: 100%;
+	}
 
+	.gallery img {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		top: 0;
+		object-fit: cover;
+	}
+
+
+	
 	/* #newsDetail{
 		display: table-cell;
 		margin: 3%;
