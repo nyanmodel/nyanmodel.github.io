@@ -1,0 +1,7 @@
+function secretaddress() {
+  var ma = String.fromCharCode(117,110,114,101,97,108,95,115,102,99,64,104,111,116,109,97,105,108,46,99,111,109);
+  var mt = String.fromCharCode(109,97,105,108,116,111,58);
+  document.write('<a href="'+ mt + ma + "?subject=UNREALに関するお問い合わせ" +'">' + ma + '</a>');
+
+}
+secretaddress()
