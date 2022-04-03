@@ -1,11 +1,9 @@
-
-
 html:before,
 html:after,
 body:before,
 body:after {
   content: "";
-  background: rgb(111, 216, 235);
+  background: #6fd8eb;
   position: fixed;
   display: block;
   z-index: 1;
@@ -22,7 +20,7 @@ html:before {
 /* 右 */
 html:after {
   width: 10px;
-  height: 100vh;
+  height: 120vh;
   right: 0;
   top: 0;
 }
@@ -38,13 +36,13 @@ body:before {
 /* 左 */
 body:after {
   width: 10px;
-  height: 100vh;
+  height: 120vh;
   top: 0;
   left: 0;
 }
 
 .contents{
-    margin: 5em 10%;
+    margin: 7rem 10%;
     color: white;
     font-family: "Shippori Mincho", serif;
 }
@@ -53,9 +51,13 @@ body:after {
   margin: 3em 0;
 }
 
+.menu{
+  line-height: 2em;
+}
+
 #title{
   padding: 3% 0;
-  background-color: rgb(111, 216, 235);
+  background-color: #6fd8eb;
   color: black;
   text-align: center;
   font-size: 5em;
@@ -65,11 +67,22 @@ body:after {
 
 p{
   margin: 2em 0;
-  line-height: 2em;
+  line-height: 2.2em;
 }
 
 p.sabi{
   padding: 0 2em;
+}
+
+a{
+  text-decoration: none;
+  color: #fff;
+  transition: .3s;
+}
+
+a:hover{
+  color: #6fd8eb;
+  transition: .3s;
 }
 
 h1{
@@ -89,10 +102,22 @@ h4{
   color: #999;
 }
 
+.return-btn{
+  font-size: 1.5rem;
+  color: #fff;
+  position: fixed;
+  top: 40px;
+  left: 40px;
+  margin: 0;
+}
+
 footer{
   font-family: 'Questrial', 'Helvetica', sans-serif;
   font-size: 0.7rem;
   color:white;
   margin: 15px;
   text-align: center;
+  width: 100%;
+  bottom: 10px;
+  position: fixed;
 }
