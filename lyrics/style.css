@@ -1,3 +1,20 @@
+.contents{
+  animation-name:fadeInAnime;
+  animation-duration:3s;
+  animation-fill-mode:forwards;
+  opacity:0;
+}
+  
+@keyframes fadeInAnime{
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
 html:before,
 html:after,
 body:before,
@@ -63,6 +80,7 @@ body:after {
   font-size: 5em;
   width: 100%;
   font-family: 'Questrial', 'Helvetica', sans-serif;
+  z-index: 3;
 }
 
 p{
@@ -109,6 +127,18 @@ h4{
   top: 40px;
   left: 40px;
   margin: 0;
+}
+
+.top-btn{
+  width: 40px;
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  margin: 0;
+}
+
+.top-btn img{
+  width: 40px;
 }
 
 footer{
