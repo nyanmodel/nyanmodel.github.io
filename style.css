@@ -76,6 +76,9 @@ html {
 		background: #FFFFFF;
 		z-index: 10;
 	} */
+
+
+
 	body {
 		margin: 0;
 		font-family: sans-serif;
@@ -86,6 +89,7 @@ html {
 		-webkit-user-select: none;
 		-ms-user-select: none; */
 	}
+
 	section {
 		margin: 20px auto;
 		width: 900px;
@@ -97,9 +101,11 @@ html {
 		background-color: #fff;
 		box-shadow: 5px 5px 10px rgba(0, 0, 0, .3);
 	}
+
 	p {
 		padding: 1% 5%;
 	}
+
 	header {
 		width: 100%;
 		height: 100vh;
@@ -114,6 +120,7 @@ html {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 	}
+
 	#toptext {
 		margin: 0 auto;
 		height: 100vh;
@@ -127,6 +134,7 @@ html {
 		font-family: 'Questrial', 'Helvetica', sans-serif;
 		color: #000; */
 	}
+
 	#logo{
 		width: 400px;
 	}
@@ -134,10 +142,12 @@ html {
 	#pageTitle {
 		font-size: 4rem;
 	}
+
 	#pageSubtitle {
 		font-size: 1.5rem;
 		font-weight: lighter;
 	}
+
 	#bottomtext {
 		margin: auto;
 		display: inline-block;
@@ -157,14 +167,17 @@ html {
 		-webkit-user-select: none;
 		-ms-user-select: none;
 	}
+
 	#sdText {
 		font-family: Helvetica, sans-serif;
 		font-size: 1rem;
 		font-weight: 300;
 	}
+
 	#sdArrow {
 		font-size: 5rem;
 	}
+
 	@-webkit-keyframes blink {
 		0% {
 			opacity: .3;
@@ -189,6 +202,7 @@ html {
 			opacity: 1;
 		}
 	}
+
 	#nav {
 		list-style: none;
 		margin: 0;
@@ -196,6 +210,7 @@ html {
 		display: flex;
 		justify-content: space-between;
 	}
+
 	.nav_btn {
 		font-family: 'Questrial', 'Helvetica', sans-serif;
 		font-weight: normal;
@@ -206,6 +221,7 @@ html {
 		background-attachment: fixed;
 		text-align: center;
 	}
+
 	.nav_btn a {
 		display: block;
 		text-decoration: none;
@@ -221,10 +237,12 @@ html {
 		margin: auto;
 
 	}
+
 	.profile_icon{
 		width: 30%;
 		margin: 0 40px;
 	}
+
 	.profile_letter{
 		width: 70%;
 		margin:40px;
@@ -236,6 +254,13 @@ html {
 		font-family: 'Zen Kaku Gothic New', 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', sans-serif;
 	}
 
+	#languages{
+		padding: 20px;
+		text-align: center;
+		font-size: 2em;
+	}
+
+
 	img.cont {
 		/* max-width: 80%;
 		max-height: 100vh;
@@ -245,6 +270,7 @@ html {
 		border-radius: 50px; */
 		width: 100%;
 	}
+
 	img#news {
 		height: 200px;
 		display: table-cell;
@@ -252,6 +278,7 @@ html {
 		box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
 		margin: 20px;
 	}
+
 	img#icon {
 		margin: 50px 10px 0 10px;
 		border-radius: 100px;
@@ -260,10 +287,12 @@ html {
 		opacity: 1;
 		transition: .2s;
 	}
+
 	img#icon:hover {
 		transition: .2s;
 		border-radius: 30px;
 	}
+
 	img#photo {
 		width: 30%;
 		float: right;
@@ -279,11 +308,13 @@ html {
 		flex-wrap: wrap;
 		align-items: stretch;
 	}
+
 	.gallery a {
 		display: block;
 		position: relative;
 		width: 25%;
 	}
+
 	.gallery a::before {
 		content: "";
 		display: block;
@@ -296,11 +327,13 @@ html {
 		height: 100%;
 		top: 0;
 		object-fit: cover;
+		filter: grayscale(100%);
+		transition: .1s ease-in-out;
 	}
 
-	/* .gallery a:hover img{
-		opacity: 0.5;
-	} */
+	.gallery a:hover img{
+		filter:grayscale(0);
+	}
 
 
 
@@ -344,6 +377,7 @@ html {
 		border: 0;
 		border-bottom: 1px dashed #8c8b8b; 
 	} 
+
 	#links_contents {
 		width: 80%;
 		margin: auto;
@@ -352,6 +386,7 @@ html {
 		justify-content: center;
 		flex-wrap: wrap;
 	}
+
 	#links_contents button {
 		font-size: .8rem;
 		font-family: Helvetica, sans-serif;
