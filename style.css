@@ -776,7 +776,7 @@ html {
 		flex-wrap: wrap;
 		justify-content: center;
 	}
-	#links_contents button {
+	button {
 		font-size: 15px;
 		color: #fff;
 		padding: 10px;
