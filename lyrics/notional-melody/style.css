@@ -1,0 +1,144 @@
+@font-face {
+	font-family: 'MagicRing';
+	src: url(MagicRing.ttf);
+}
+
+.contents{
+    animation-name:fadeInAnime;
+    animation-duration:3s;
+    animation-fill-mode:forwards;
+    opacity:0;
+  }
+    
+  @keyframes fadeInAnime{
+    from {
+      opacity: 0;
+    }
+  
+    to {
+      opacity: 1;
+    }
+  }
+
+  body{
+    background-image: url("background-image.jpg");
+    backdrop-filter: blur(12px);
+    min-height: 100vh;
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;
+    background-attachment: fixed;
+    margin: 0;
+  }
+  
+  .contents{
+      margin: 0;
+      padding: 7rem 20%;
+      color: white;
+      font-family: "Shippori Mincho", serif;
+  }
+  
+  .block{
+    margin: 3em 0;
+  }
+  
+  .menu{
+    line-height: 2em;
+  }
+  
+  #title{
+    padding: 3% 0;
+    color: rgba(0, 0, 0, 0);
+    -webkit-text-stroke: 1px #FFF;
+    text-stroke: 1px #FFF;
+    text-align: center;
+    font-size: 4em;
+    width: 100%;
+    font-family: 'MagicRing','Questrial', 'Helvetica', sans-serif;
+    z-index: 3;
+  }
+
+  .text{
+    margin: 15px 40px;
+  }
+  
+  p{
+    margin: 2em 0;
+    line-height: 2.2em;
+  }
+  
+  p.sabi{
+    padding: 0 2em;
+  }
+  
+  a{
+    text-decoration: none;
+    color: #fff;
+    transition: .3s;
+  }
+  
+  a:hover{
+    color: #6fd8eb;
+    transition: .3s;
+  }
+  
+  details{
+    padding: 20px;
+    background-color: rgba(0, 0, 0, .3);
+    margin: 20px 0;
+    border-radius: 10px;
+  }
+
+  summary{
+    font-family: 'Questrial', 'Helvetica', sans-serif;
+    font-size: 2em;
+  }
+
+  h1{
+    font-family: 'Questrial', 'Helvetica', sans-serif;
+    margin: 0;
+  }
+  
+  h2{
+    font-family: 'Questrial', 'Helvetica', sans-serif;
+    margin: 0.3em 0;
+    color: rgba(255, 255, 255, .6)
+  }
+  
+  h4{
+    font-family: 'Questrial', 'Helvetica', sans-serif;
+    margin: 0.5em 0;
+    color: rgba(255, 255, 255, .6)
+  }
+  
+  .return-btn{
+    font-size: 1.5rem;
+    color: #fff;
+    position: fixed;
+    top: 40px;
+    left: 40px;
+    margin: 0;
+  }
+  
+  .top-btn{
+    width: 40px;
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    margin: 0;
+  }
+  
+  .top-btn img{
+    width: 40px;
+  }
+  
+  footer{
+    font-family: 'Questrial', 'Helvetica', sans-serif;
+    font-size: 0.7rem;
+    color:white;
+    margin: 15px 0;
+    text-align: center;
+    width: 100%;
+    bottom: 10px;
+    position: fixed;
+  }
