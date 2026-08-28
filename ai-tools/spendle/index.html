@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#635bff" />
+    <title>Spendle</title>
+    <link rel="icon" href="img/dna-solid-full.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="app-header">
+        <button id="back-button" class="icon-button hidden" type="button" aria-label="トップへ戻る">←</button>
+        <div>
+          <p id="page-eyebrow" class="eyebrow">PERSONAL EXPENSES</p>
+          <h1 id="page-title">Spendle</h1>
+        </div>
+        <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理">⚙</button>
+      </header>
+
+      <section id="home-view">
+        <section class="dashboard-overview" aria-label="予算と実質負担額の概要">
+          <section class="summary-card" aria-labelledby="summary-label">
+            <p id="summary-label" class="summary-label">あなたの実質負担額</p>
+            <p id="total-burden" class="summary-amount">¥0</p>
+            <p class="summary-note">登録済みのすべての支出を、割り勘後の金額で集計</p>
+          </section>
+          <section class="budget-chart-card" aria-labelledby="budget-chart-title">
+            <div class="chart-copy"><p id="budget-chart-title" class="summary-label">全小冊子の予算</p><strong id="total-budget">¥0</strong><p id="budget-chart-note">予算を設定すると使用状況を表示します</p></div>
+            <div class="donut-chart-wrap"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></div>
+          </section>
+        </section>
+
+        <div class="section-heading">
+          <h2>小冊子</h2>
+          <button id="add-category-button" class="text-button" type="button">＋ 作成</button>
+        </div>
+        <div id="category-list" class="category-grid" aria-live="polite"></div>
+      </section>
+
+      <section id="category-view" class="hidden" aria-live="polite">
+        <section class="category-summary">
+          <div id="detail-category-icon" class="detail-icon" aria-hidden="true"></div>
+          <div>
+            <p class="summary-label">この小冊子の実質負担額</p>
+            <p id="category-burden" class="detail-amount">¥0</p>
+            <p id="category-count" class="muted-text">0件の支出</p>
+          </div>
+          <button id="edit-category-button" class="icon-button" type="button" aria-label="カテゴリを編集">✎</button>
+        </section>
+        <div class="section-heading"><h2>支出一覧</h2></div>
+        <div id="expense-list" class="expense-list"></div>
+      </section>
+    </main>
+
+    <button id="add-expense-button" class="primary-fab" type="button">＋ 支出を登録</button>
+
+    <dialog id="expense-dialog" class="app-dialog">
+      <form id="expense-form" novalidate>
+        <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
+        <input id="expense-id" type="hidden" />
+        <label>支出名<input id="expense-name" name="name" type="text" autocomplete="off" required maxlength="80" placeholder="例：ラーメン" /></label>
+        <label>合計金額（円）<input id="expense-amount" name="amount" type="number" inputmode="numeric" min="1" step="1" required placeholder="例：1200" /></label>
+        <label>割り勘人数<input id="expense-people" name="people" type="number" inputmode="numeric" min="1" step="1" value="1" required /></label>
+        <section class="burden-preview"><p>あなたの負担額</p><strong id="burden-preview-value">¥0</strong><span id="burden-preview-note">合計金額と人数を入力してください</span></section>
+        <label>小冊子<select id="expense-category" name="categoryId" required></select></label>
+        <label>日付<input id="expense-date" name="date" type="date" required /></label>
+        <p id="expense-form-error" class="form-error" role="alert"></p>
+        <button class="primary-button" type="submit">保存する</button>
+      </form>
+    </dialog>
+
+    <dialog id="category-dialog" class="app-dialog">
+      <form id="category-form" novalidate>
+        <div class="dialog-header"><h2 id="category-dialog-title">小冊子を作成</h2><button class="icon-button" type="button" data-close-dialog="category-dialog" aria-label="閉じる">×</button></div>
+        <input id="category-id" type="hidden" />
+        <label>小冊子名<input id="category-name" type="text" autocomplete="off" required maxlength="40" placeholder="例：大阪旅行" /></label>
+        <label>予算（円）<input id="category-budget" type="number" inputmode="numeric" min="0" step="1" placeholder="未設定の場合は空欄" /></label>
+        <fieldset><legend>アイコン</legend><div id="icon-options" class="icon-options"></div></fieldset>
+        <p id="category-form-error" class="form-error" role="alert"></p>
+        <button class="primary-button" type="submit">保存する</button>
+        <button id="delete-category-button" class="danger-button hidden" type="button">この小冊子を削除</button>
+      </form>
+    </dialog>
+
+    <dialog id="settings-dialog" class="app-dialog">
+      <div class="dialog-header"><h2>設定・データ管理</h2><button class="icon-button" type="button" data-close-dialog="settings-dialog" aria-label="閉じる">×</button></div>
+      <p class="settings-copy">データはこのブラウザだけに保存されます。端末変更やサイトデータ削除に備え、定期的にCSVを保存してください。</p>
+      <button id="export-csv-button" class="primary-button" type="button">CSVをエクスポート</button>
+    </dialog>
+
+    <template id="empty-categories-template"><div class="empty-state"><i class="bi bi-journal-bookmark" aria-hidden="true"></i><h2>最初の小冊子を作りましょう</h2><p>旅行、ライブ、生活費など、支出をまとめる単位を作れます。</p></div></template>
+    <template id="empty-expenses-template"><div class="empty-state"><i class="bi bi-receipt" aria-hidden="true"></i><h2>支出はまだありません</h2><p>「支出を登録」から最初の記録を追加できます。</p></div></template>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.min.js" integrity="sha512-nKXmKvJyiGQy343jatQlzDprflyB5c+tKCzGP3Uq67v+lmzfnZUi/ZT+fc6ITZfSC5HhaBKUIvr/nTLCV+7F+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>
