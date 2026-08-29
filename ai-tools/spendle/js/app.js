@@ -14,12 +14,12 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 
 const elements = {
-  backButton: document.querySelector("#back-button"), pageEyebrow: document.querySelector("#page-eyebrow"), pageTitle: document.querySelector("#page-title"), settingsButton: document.querySelector("#settings-button"),
-  homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudget: document.querySelector("#total-budget"), budgetChartNote: document.querySelector("#budget-chart-note"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
-  addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
+  backButton: document.querySelector("#back-button"), pageEyebrow: document.querySelector("#page-eyebrow"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
+  homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
+  addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
   expenseDialog: document.querySelector("#expense-dialog"), expenseForm: document.querySelector("#expense-form"), expenseDialogTitle: document.querySelector("#expense-dialog-title"), expenseId: document.querySelector("#expense-id"), expenseName: document.querySelector("#expense-name"), expenseAmount: document.querySelector("#expense-amount"), expensePeople: document.querySelector("#expense-people"), expenseCategory: document.querySelector("#expense-category"), expenseDate: document.querySelector("#expense-date"), expenseError: document.querySelector("#expense-form-error"), burdenPreviewValue: document.querySelector("#burden-preview-value"), burdenPreviewNote: document.querySelector("#burden-preview-note"),
   categoryDialog: document.querySelector("#category-dialog"), categoryForm: document.querySelector("#category-form"), categoryDialogTitle: document.querySelector("#category-dialog-title"), categoryId: document.querySelector("#category-id"), categoryName: document.querySelector("#category-name"), categoryBudget: document.querySelector("#category-budget"), categoryError: document.querySelector("#category-form-error"), iconOptions: document.querySelector("#icon-options"), deleteCategoryButton: document.querySelector("#delete-category-button"),
-  settingsDialog: document.querySelector("#settings-dialog"), exportCsvButton: document.querySelector("#export-csv-button"), emptyCategories: document.querySelector("#empty-categories-template"), emptyExpenses: document.querySelector("#empty-expenses-template")
+  settingsDialog: document.querySelector("#settings-dialog"), exportCsvButton: document.querySelector("#export-csv-button"), helpDialog: document.querySelector("#help-dialog"), emptyCategories: document.querySelector("#empty-categories-template"), emptyExpenses: document.querySelector("#empty-expenses-template")
 };
 
 function formatYen(amount) { return `¥${new Intl.NumberFormat("ja-JP").format(amount)}`; }
@@ -71,13 +71,13 @@ function renderCategories() {
 
 function openCategory(categoryId) {
   selectedCategoryId = categoryId;
-  elements.homeView.classList.add("hidden"); elements.categoryView.classList.remove("hidden"); elements.backButton.classList.remove("hidden"); elements.settingsButton.classList.add("hidden"); elements.addCategoryButton.classList.add("hidden");
+  elements.homeView.classList.add("hidden"); elements.categoryView.classList.remove("hidden"); elements.backButton.classList.remove("hidden"); elements.helpButton.classList.add("hidden"); elements.settingsButton.classList.add("hidden"); elements.addCategoryButton.classList.add("hidden");
   renderCategoryDetail();
 }
 
 function returnHome() {
   selectedCategoryId = null;
-  elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
+  elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
   elements.pageEyebrow.textContent = "PERSONAL EXPENSES"; elements.pageTitle.textContent = "Spendle";
 }
 
@@ -86,7 +86,9 @@ function renderCategoryDetail() {
   if (!category) { returnHome(); return; }
   const expenses = sortExpensesByDate(data.expenses.filter((expense) => expense.categoryId === category.id));
   elements.pageEyebrow.textContent = "CATEGORY"; elements.pageTitle.textContent = category.name; elements.detailCategoryIcon.replaceChildren(createCategoryIcon(category.icon, ""));
-  elements.categoryBurden.textContent = formatYen(calculateCategoryBurden(data.expenses, category.id)); elements.categoryCount.textContent = `${expenses.length}件の支出`;
+  const categoryBurden = calculateCategoryBurden(data.expenses, category.id);
+  elements.categoryBurden.textContent = formatYen(categoryBurden); elements.categoryCount.textContent = `${expenses.length}件の支出`;
+  renderCategoryDonutChart(categoryBurden, getCategoryBudget(category));
   elements.expenseList.replaceChildren();
   if (!expenses.length) { elements.expenseList.append(elements.emptyExpenses.content.cloneNode(true)); return; }
   expenses.forEach((expense) => elements.expenseList.append(createExpenseItem(expense)));
@@ -148,21 +150,31 @@ function getCategoryBudget(category) {
   return Number.isInteger(category.budget) && category.budget > 0 ? category.budget : 0;
 }
 
-function renderBudgetChart(totalBurden, totalBudget) {
-  const percentage = totalBudget ? Math.round((totalBurden / totalBudget) * 100) : null;
-  elements.totalBudget.textContent = formatYen(totalBudget);
-  elements.budgetPercentage.textContent = percentage === null ? "—" : `${percentage}%`;
-  elements.budgetChartNote.textContent = totalBudget ? `実質負担額 ${formatYen(totalBurden)} ・ ${percentage}%使用` : "小冊子ごとに予算を設定してください";
-  const canvas = elements.budgetDonutChart;
+function drawDonut(canvas, percentageEl, burden, budget, options = {}) {
+  const { radius = 52, lineWidth = 15, trackColor = "#d8e5ee", progressColor = "#004CA0", overBudgetColor = "#c0364b" } = options;
+  const percentage = budget ? Math.round((burden / budget) * 100) : null;
+  percentageEl.textContent = percentage === null ? "—" : `${percentage}%`;
   const context = canvas.getContext("2d");
-  const size = canvas.width; const center = size / 2; const radius = 52; const lineWidth = 15;
+  const size = canvas.width; const center = size / 2;
   context.clearRect(0, 0, size, size);
   context.lineWidth = lineWidth; context.lineCap = "round";
-  context.strokeStyle = "#d8e5ee"; context.beginPath(); context.arc(center, center, radius, 0, Math.PI * 2); context.stroke();
-  if (!totalBudget) return;
-  const usedRatio = Math.min(totalBurden / totalBudget, 1);
-  context.strokeStyle = totalBurden > totalBudget ? "#c0364b" : "#004CA0";
+  context.strokeStyle = trackColor; context.beginPath(); context.arc(center, center, radius, 0, Math.PI * 2); context.stroke();
+  if (!budget) return;
+  const usedRatio = Math.min(burden / budget, 1);
+  context.strokeStyle = burden > budget ? overBudgetColor : progressColor;
   context.beginPath(); context.arc(center, center, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * usedRatio)); context.stroke();
+}
+
+function renderBudgetChart(totalBurden, totalBudget) {
+  drawDonut(elements.budgetDonutChart, elements.budgetPercentage, totalBurden, totalBudget, {
+    radius: 52, lineWidth: 15, trackColor: "rgba(255, 255, 255, 0.3)", progressColor: "#ffffff", overBudgetColor: "#ffb4c0",
+  });
+}
+
+function renderCategoryDonutChart(categoryBurden, categoryBudget) {
+  elements.categoryDonutWrap.classList.toggle("hidden", !categoryBudget);
+  if (!categoryBudget) return;
+  drawDonut(elements.categoryDonutChart, elements.categoryPercentage, categoryBurden, categoryBudget, { radius: 34, lineWidth: 11 });
 }
 
 function openCategoryDialog(category = null) {
@@ -188,9 +200,9 @@ function deleteCurrentCategory() {
 }
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => document.querySelector(`#${button.dataset.closeDialog}`).close()));
-elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.settingsButton.addEventListener("click", () => elements.settingsDialog.showModal());
+elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.helpButton.addEventListener("click", () => elements.helpDialog.showModal()); elements.settingsButton.addEventListener("click", () => elements.settingsDialog.showModal());
 elements.expenseAmount.addEventListener("input", updateBurdenPreview); elements.expensePeople.addEventListener("input", updateBurdenPreview); elements.expenseForm.addEventListener("submit", saveExpense); elements.categoryForm.addEventListener("submit", saveCategory); elements.deleteCategoryButton.addEventListener("click", deleteCurrentCategory); elements.exportCsvButton.addEventListener("click", () => exportExpensesAsCsv(sortExpensesByDate(data.expenses), data.categories));
-window.addEventListener("resize", () => renderBudgetChart(data.expenses.reduce((sum, expense) => sum + calculatePersonalBurden(expense.amount, expense.people), 0), calculateTotalBudget(data.categories)));
+window.addEventListener("resize", render);
 
 render();
 
