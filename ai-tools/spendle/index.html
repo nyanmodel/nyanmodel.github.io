@@ -19,20 +19,19 @@
           <p id="page-eyebrow" class="eyebrow">PERSONAL EXPENSES</p>
           <h1 id="page-title">Spendle</h1>
         </div>
-        <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理">⚙</button>
+        <button id="help-button" class="icon-button" type="button" aria-label="使い方"><i class="bi bi-question-circle" aria-hidden="true"></i></button>
+        <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理"><i class="bi bi-gear" aria-hidden="true"></i></button>
       </header>
 
       <section id="home-view">
-        <section class="dashboard-overview" aria-label="予算と実質負担額の概要">
-          <section class="summary-card" aria-labelledby="summary-label">
-            <p id="summary-label" class="summary-label">あなたの実質負担額</p>
-            <p id="total-burden" class="summary-amount">¥0</p>
-            <p class="summary-note">登録済みのすべての支出を、割り勘後の金額で集計</p>
-          </section>
-          <section class="budget-chart-card" aria-labelledby="budget-chart-title">
-            <div class="chart-copy"><p id="budget-chart-title" class="summary-label">全小冊子の予算</p><strong id="total-budget">¥0</strong><p id="budget-chart-note">予算を設定すると使用状況を表示します</p></div>
-            <div class="donut-chart-wrap"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></div>
-          </section>
+        <section class="dashboard-band" aria-label="実質負担額と全小冊子の予算">
+          <div class="dashboard-band-inner">
+            <div class="dashboard-band-total">
+              <p class="dashboard-band-eyebrow">TOTAL</p>
+              <p id="total-burden" class="dashboard-band-amount">¥0</p>
+            </div>
+            <div class="donut-chart-wrap donut-chart-wrap--inverted"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></div>
+          </div>
         </section>
 
         <div class="section-heading">
@@ -50,6 +49,7 @@
             <p id="category-burden" class="detail-amount">¥0</p>
             <p id="category-count" class="muted-text">0件の支出</p>
           </div>
+          <div id="category-donut-wrap" class="donut-chart-wrap donut-chart-wrap--small hidden"><canvas id="category-donut-chart" width="96" height="96" role="img" aria-label="この小冊子の予算に対する実質負担額の割合"></canvas><span id="category-percentage">—</span></div>
           <button id="edit-category-button" class="icon-button" type="button" aria-label="カテゴリを編集">✎</button>
         </section>
         <div class="section-heading"><h2>支出一覧</h2></div>
@@ -91,6 +91,15 @@
       <div class="dialog-header"><h2>設定・データ管理</h2><button class="icon-button" type="button" data-close-dialog="settings-dialog" aria-label="閉じる">×</button></div>
       <p class="settings-copy">データはこのブラウザだけに保存されます。端末変更やサイトデータ削除に備え、定期的にCSVを保存してください。</p>
       <button id="export-csv-button" class="primary-button" type="button">CSVをエクスポート</button>
+    </dialog>
+
+    <dialog id="help-dialog" class="app-dialog">
+      <div class="dialog-header"><h2>使い方</h2><button class="icon-button" type="button" data-close-dialog="help-dialog" aria-label="閉じる">×</button></div>
+      <div class="help-copy">
+        <p><strong>TOTAL</strong> は、登録済みのすべての支出を割り勘後の金額で集計した、あなたの実質負担額です。</p>
+        <p>右のドーナツグラフは、すべての小冊子に設定した予算の合計に対して、実質負担額がどれくらいの割合かを表します。予算を設定していない場合は「—」と表示されます。</p>
+        <p>各小冊子の画面でも同じように、その小冊子の予算に対する実質負担額の割合をドーナツグラフで確認できます。</p>
+      </div>
     </dialog>
 
     <template id="empty-categories-template"><div class="empty-state"><i class="bi bi-journal-bookmark" aria-hidden="true"></i><h2>最初の小冊子を作りましょう</h2><p>旅行、ライブ、生活費など、支出をまとめる単位を作れます。</p></div></template>
