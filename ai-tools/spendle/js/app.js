@@ -14,7 +14,7 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 
 const elements = {
-  backButton: document.querySelector("#back-button"), pageEyebrow: document.querySelector("#page-eyebrow"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
+  backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
   homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
   expenseDialog: document.querySelector("#expense-dialog"), expenseForm: document.querySelector("#expense-form"), expenseDialogTitle: document.querySelector("#expense-dialog-title"), expenseId: document.querySelector("#expense-id"), expenseName: document.querySelector("#expense-name"), expenseAmount: document.querySelector("#expense-amount"), expensePeople: document.querySelector("#expense-people"), expenseCategory: document.querySelector("#expense-category"), expenseDate: document.querySelector("#expense-date"), expenseError: document.querySelector("#expense-form-error"), burdenPreviewValue: document.querySelector("#burden-preview-value"), burdenPreviewNote: document.querySelector("#burden-preview-note"),
@@ -61,10 +61,15 @@ function renderCategories() {
   if (!categories.length) { elements.categoryList.append(elements.emptyCategories.content.cloneNode(true)); return; }
   categories.forEach((category) => {
     const card = document.createElement("button"); card.type = "button"; card.className = "category-card"; card.setAttribute("aria-label", `${category.name}を開く`);
+    const budget = getCategoryBudget(category); const burden = calculateCategoryBurden(data.expenses, category.id);
+    if (budget) {
+      const fill = document.createElement("span"); fill.className = `category-fill${burden > budget ? " category-fill--over" : ""}`; fill.style.height = `${Math.min((burden / budget) * 100, 100)}%`; fill.setAttribute("aria-hidden", "true");
+      card.append(fill);
+    }
     const icon = createCategoryIcon(category.icon, "category-icon");
     const name = document.createElement("span"); name.className = "category-name"; name.textContent = category.name;
-    const amount = document.createElement("span"); amount.className = "category-amount"; amount.textContent = formatYen(calculateCategoryBurden(data.expenses, category.id));
-    const count = document.createElement("span"); count.className = "category-count"; const budget = getCategoryBudget(category); count.textContent = budget ? `予算 ${formatYen(budget)} ・ ${data.expenses.filter((expense) => expense.categoryId === category.id).length}件` : `${data.expenses.filter((expense) => expense.categoryId === category.id).length}件`;
+    const amount = document.createElement("span"); amount.className = "category-amount"; amount.textContent = formatYen(burden);
+    const count = document.createElement("span"); count.className = "category-count"; count.textContent = budget ? `予算 ${formatYen(budget)} ・ ${data.expenses.filter((expense) => expense.categoryId === category.id).length}件` : `${data.expenses.filter((expense) => expense.categoryId === category.id).length}件`;
     card.append(icon, name, amount, count); card.addEventListener("click", () => openCategory(category.id)); elements.categoryList.append(card);
   });
 }
@@ -78,14 +83,14 @@ function openCategory(categoryId) {
 function returnHome() {
   selectedCategoryId = null;
   elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
-  elements.pageEyebrow.textContent = "PERSONAL EXPENSES"; elements.pageTitle.textContent = "Spendle";
+  elements.pageTitle.textContent = "Spendle."; elements.pageTitle.classList.add("app-logo");
 }
 
 function renderCategoryDetail() {
   const category = getCategoryById(data.categories, selectedCategoryId);
   if (!category) { returnHome(); return; }
   const expenses = sortExpensesByDate(data.expenses.filter((expense) => expense.categoryId === category.id));
-  elements.pageEyebrow.textContent = "CATEGORY"; elements.pageTitle.textContent = category.name; elements.detailCategoryIcon.replaceChildren(createCategoryIcon(category.icon, ""));
+  elements.pageTitle.textContent = category.name; elements.pageTitle.classList.remove("app-logo"); elements.detailCategoryIcon.replaceChildren(createCategoryIcon(category.icon, ""));
   const categoryBurden = calculateCategoryBurden(data.expenses, category.id);
   elements.categoryBurden.textContent = formatYen(categoryBurden); elements.categoryCount.textContent = `${expenses.length}件の支出`;
   renderCategoryDonutChart(categoryBurden, getCategoryBudget(category));

@@ -103,12 +103,9 @@ h2 {
   font-size: 1.05rem;
 }
 
-.eyebrow {
+.app-logo {
   color: var(--accent);
-  font-weight: 750;
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  margin-bottom: 3px;
+  letter-spacing: -0.03em;
 }
 
 .hidden {
@@ -257,6 +254,9 @@ h2 {
 }
 
 .category-card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   min-height: 144px;
   display: flex;
   flex-direction: column;
@@ -276,6 +276,22 @@ h2 {
 
 .category-card:active {
   transform: scale(0.98);
+}
+
+.category-fill {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  border-radius: 100% 100% 0 0 / 10px 10px 0 0;
+  background: linear-gradient(180deg, rgba(0, 118, 197, 0.24), rgba(0, 118, 197, 0.1));
+  transition: height 0.4s ease;
+  pointer-events: none;
+}
+
+.category-fill--over {
+  background: linear-gradient(180deg, rgba(196, 54, 75, 0.28), rgba(196, 54, 75, 0.12));
 }
 
 .category-icon {
@@ -522,6 +538,16 @@ h2 {
 .app-dialog select:focus {
   outline: 3px solid rgba(0, 76, 160, 0.16);
   border-color: var(--accent);
+}
+
+.app-dialog input[type="date"] {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.app-dialog input[type="date"]::-webkit-date-and-time-value {
+  margin: 0;
+  text-align: left;
 }
 
 .app-dialog fieldset {
