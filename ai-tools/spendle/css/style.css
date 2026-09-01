@@ -294,8 +294,8 @@ h2 {
   bottom: 0;
   z-index: -1;
   background: linear-gradient(180deg, rgba(0, 118, 197, 0.24), rgba(0, 118, 197, 0.1));
-  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><path d='M0 14 C 30 3,55 1,82 13 C 102 22,125 25,150 15 C 168 8,187 3,213 13 C 235 21,258 24,300 14 V200 H0 Z' fill='white'/></svg>");
-  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><path d='M0 14 C 30 3,55 1,82 13 C 102 22,125 25,150 15 C 168 8,187 3,213 13 C 235 21,258 24,300 14 V200 H0 Z' fill='white'/></svg>");
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><path d='M0 14 C 30 8.5,55 7.5,82 13.5 C 102 18,125 19.5,150 14.5 C 168 11,187 8.5,213 13.5 C 235 17.5,258 19,300 14 V200 H0 Z' fill='white'/></svg>");
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><path d='M0 14 C 30 8.5,55 7.5,82 13.5 C 102 18,125 19.5,150 14.5 C 168 11,187 8.5,213 13.5 C 235 17.5,258 19,300 14 V200 H0 Z' fill='white'/></svg>");
   -webkit-mask-repeat: repeat-x;
   mask-repeat: repeat-x;
   -webkit-mask-position: top left;
