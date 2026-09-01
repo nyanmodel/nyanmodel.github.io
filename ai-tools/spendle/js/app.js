@@ -16,7 +16,7 @@ let selectedIcon = icons[0];
 
 const elements = {
   backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
-  homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
+  homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
   expenseDialog: document.querySelector("#expense-dialog"), expenseForm: document.querySelector("#expense-form"), expenseDialogTitle: document.querySelector("#expense-dialog-title"), expenseId: document.querySelector("#expense-id"), expenseName: document.querySelector("#expense-name"), expenseAmount: document.querySelector("#expense-amount"), expensePeople: document.querySelector("#expense-people"), expenseCategory: document.querySelector("#expense-category"), expenseDate: document.querySelector("#expense-date"), expenseError: document.querySelector("#expense-form-error"), burdenPreviewValue: document.querySelector("#burden-preview-value"), burdenPreviewNote: document.querySelector("#burden-preview-note"),
   ocrScanButton: document.querySelector("#ocr-scan-button"), ocrFileInput: document.querySelector("#ocr-file-input"), ocrStatus: document.querySelector("#ocr-status"),
@@ -202,6 +202,8 @@ function drawDonut(canvas, percentageEl, burden, budget, options = {}) {
 }
 
 function renderBudgetChart(totalBurden, totalBudget) {
+  elements.totalBudgetNote.classList.toggle("hidden", !totalBudget);
+  if (totalBudget) elements.totalBudget.textContent = formatYen(totalBudget);
   drawDonut(elements.budgetDonutChart, elements.budgetPercentage, totalBurden, totalBudget, {
     radius: 52, lineWidth: 15, trackColor: "rgba(255, 255, 255, 0.3)", progressColor: "#ffffff", overBudgetColor: "#ffb4c0",
   });

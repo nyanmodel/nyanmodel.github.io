@@ -191,6 +191,15 @@ h2 {
   word-break: break-all;
 }
 
+.dashboard-band-budget {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+
 .donut-chart-wrap {
   position: relative;
   display: grid;
@@ -284,14 +293,32 @@ h2 {
   right: 0;
   bottom: 0;
   z-index: -1;
-  border-radius: 100% 100% 0 0 / 10px 10px 0 0;
-  background: linear-gradient(180deg, rgba(0, 118, 197, 0.24), rgba(0, 118, 197, 0.1));
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 C10 0,10 0,20 5 C30 10,30 10,40 5 V10 H0 Z' fill='rgba(70,170,230,0.45)'/></svg>"),
+    linear-gradient(180deg, rgba(0, 118, 197, 0.24), rgba(0, 118, 197, 0.1));
+  background-repeat: repeat-x, no-repeat;
+  background-position: 0 top, top left;
+  background-size: 40px 10px, 100% 100%;
   transition: height 0.4s ease;
+  animation: category-wave-scroll 3.2s linear infinite;
   pointer-events: none;
 }
 
 .category-fill--over {
-  background: linear-gradient(180deg, rgba(196, 54, 75, 0.28), rgba(196, 54, 75, 0.12));
+  background-image:
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 C10 0,10 0,20 5 C30 10,30 10,40 5 V10 H0 Z' fill='rgba(214,90,105,0.45)'/></svg>"),
+    linear-gradient(180deg, rgba(196, 54, 75, 0.28), rgba(196, 54, 75, 0.12));
+}
+
+@keyframes category-wave-scroll {
+  from { background-position: 0 top, top left; }
+  to { background-position: -40px top, top left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-fill {
+    animation: none;
+  }
 }
 
 .category-icon {
