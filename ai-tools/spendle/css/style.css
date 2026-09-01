@@ -644,6 +644,35 @@ h2 {
   font-size: 0.9rem;
 }
 
+.settings-divider {
+  height: 1px;
+  margin: 20px 0;
+  border: none;
+  background: rgba(0, 76, 160, 0.12);
+}
+
+.app-dialog .import-mode {
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.app-dialog .radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 76, 160, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.radio-option input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
 .help-copy {
   display: grid;
   gap: 12px;

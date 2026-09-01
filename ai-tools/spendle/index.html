@@ -90,6 +90,16 @@
       <div class="dialog-header"><h2>設定・データ管理</h2><button class="icon-button" type="button" data-close-dialog="settings-dialog" aria-label="閉じる">×</button></div>
       <p class="settings-copy">データはこのブラウザだけに保存されます。端末変更やサイトデータ削除に備え、定期的にCSVを保存してください。</p>
       <button id="export-csv-button" class="primary-button" type="button">CSVをエクスポート</button>
+
+      <div class="settings-divider" role="separator"></div>
+
+      <fieldset class="import-mode">
+        <legend>インポート方法</legend>
+        <label class="radio-option"><input type="radio" name="import-mode" value="append" checked />追記（既存データに追加）</label>
+        <label class="radio-option"><input type="radio" name="import-mode" value="replace" />上書き（既存データをすべて削除して置き換え）</label>
+      </fieldset>
+      <input id="import-csv-input" class="hidden" type="file" accept=".csv,text/csv" />
+      <button id="import-csv-button" class="primary-button" type="button">CSVをインポート</button>
     </dialog>
 
     <dialog id="help-dialog" class="app-dialog">
