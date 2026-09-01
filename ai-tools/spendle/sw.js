@@ -1,4 +1,4 @@
-const CACHE_NAME = "spendle-v1";
+const CACHE_NAME = "spendle-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -8,6 +8,7 @@ const APP_SHELL = [
   "./js/categories.js",
   "./js/expenses.js",
   "./js/csv.js",
+  "./js/ocr.js",
   "./manifest.webmanifest",
   "./img/dna-solid-full.svg",
   "./img/pwa-icon.svg",

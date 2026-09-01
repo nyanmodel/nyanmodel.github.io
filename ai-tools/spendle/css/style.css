@@ -612,7 +612,8 @@ h2 {
 }
 
 .primary-button,
-.danger-button {
+.danger-button,
+.secondary-button {
   min-height: 50px;
   border: 0;
   border-radius: 14px;
@@ -623,6 +624,37 @@ h2 {
   color: #fff;
   background: var(--accent);
   box-shadow: 0 8px 16px rgba(0, 76, 160, 0.18);
+}
+
+.ocr-trigger {
+  display: grid;
+  gap: 6px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  border: 1px solid rgba(0, 76, 160, 0.25);
+  color: var(--accent);
+  background: rgba(214, 233, 248, 0.55);
+}
+
+.secondary-button:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.ocr-status {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.ocr-status--warn {
+  color: #8a6d1a;
 }
 
 .danger-button {
