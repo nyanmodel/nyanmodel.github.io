@@ -191,6 +191,15 @@ h2 {
   word-break: break-all;
 }
 
+.dashboard-band-budget {
+  margin: 4px 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 0.8rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: break-word;
+}
+
 .donut-chart-wrap {
   position: relative;
   display: grid;
@@ -284,14 +293,33 @@ h2 {
   right: 0;
   bottom: 0;
   z-index: -1;
-  border-radius: 100% 100% 0 0 / 10px 10px 0 0;
   background: linear-gradient(180deg, rgba(0, 118, 197, 0.24), rgba(0, 118, 197, 0.1));
+  -webkit-mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><path d='M0 14 C 30 8.5,55 7.5,82 13.5 C 102 18,125 19.5,150 14.5 C 168 11,187 8.5,213 13.5 C 235 17.5,258 19,300 14 V200 H0 Z' fill='white'/></svg>");
+  mask-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='200' viewBox='0 0 300 200'><path d='M0 14 C 30 8.5,55 7.5,82 13.5 C 102 18,125 19.5,150 14.5 C 168 11,187 8.5,213 13.5 C 235 17.5,258 19,300 14 V200 H0 Z' fill='white'/></svg>");
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-position: top left;
+  mask-position: top left;
+  -webkit-mask-size: 300px 200px;
+  mask-size: 300px 200px;
   transition: height 0.4s ease;
+  animation: category-wave-scroll 20s linear infinite;
   pointer-events: none;
 }
 
 .category-fill--over {
   background: linear-gradient(180deg, rgba(196, 54, 75, 0.28), rgba(196, 54, 75, 0.12));
+}
+
+@keyframes category-wave-scroll {
+  from { -webkit-mask-position: 0 top; mask-position: 0 top; }
+  to { -webkit-mask-position: -300px top; mask-position: -300px top; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .category-fill {
+    animation: none;
+  }
 }
 
 .category-icon {
@@ -612,7 +640,8 @@ h2 {
 }
 
 .primary-button,
-.danger-button {
+.danger-button,
+.secondary-button {
   min-height: 50px;
   border: 0;
   border-radius: 14px;
@@ -623,6 +652,37 @@ h2 {
   color: #fff;
   background: var(--accent);
   box-shadow: 0 8px 16px rgba(0, 76, 160, 0.18);
+}
+
+.ocr-trigger {
+  display: grid;
+  gap: 6px;
+}
+
+.secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 46px;
+  border: 1px solid rgba(0, 76, 160, 0.25);
+  color: var(--accent);
+  background: rgba(214, 233, 248, 0.55);
+}
+
+.secondary-button:disabled {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+.ocr-status {
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.ocr-status--warn {
+  color: #8a6d1a;
 }
 
 .danger-button {
@@ -642,6 +702,35 @@ h2 {
   line-height: 1.7;
   margin: 0 0 18px;
   font-size: 0.9rem;
+}
+
+.settings-divider {
+  height: 1px;
+  margin: 20px 0;
+  border: none;
+  background: rgba(0, 76, 160, 0.12);
+}
+
+.app-dialog .import-mode {
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.app-dialog .radio-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 76, 160, 0.18);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.radio-option input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  accent-color: var(--accent);
 }
 
 .help-copy {

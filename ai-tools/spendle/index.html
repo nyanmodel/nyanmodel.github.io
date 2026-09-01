@@ -28,6 +28,7 @@
             <div class="dashboard-band-total">
               <p class="dashboard-band-eyebrow">TOTAL</p>
               <p id="total-burden" class="dashboard-band-amount">¥0</p>
+              <p id="total-budget-note" class="dashboard-band-budget hidden">/ <span id="total-budget">¥0</span></p>
             </div>
             <div class="donut-chart-wrap donut-chart-wrap--inverted"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></div>
           </div>
@@ -62,6 +63,11 @@
       <form id="expense-form" novalidate>
         <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
         <input id="expense-id" type="hidden" />
+        <div class="ocr-trigger">
+          <button id="ocr-scan-button" class="secondary-button" type="button"><i class="bi bi-camera" aria-hidden="true"></i>レシートを読み取る</button>
+          <input id="ocr-file-input" class="hidden" type="file" accept="image/*" capture="environment" />
+          <p id="ocr-status" class="ocr-status hidden" role="status"></p>
+        </div>
         <label>支出名<input id="expense-name" name="name" type="text" autocomplete="off" required maxlength="80" placeholder="例：ラーメン" /></label>
         <label>合計金額（円）<input id="expense-amount" name="amount" type="number" inputmode="numeric" min="1" step="1" required placeholder="例：1200" /></label>
         <label>割り勘人数<input id="expense-people" name="people" type="number" inputmode="numeric" min="1" step="1" value="1" required /></label>
@@ -90,6 +96,16 @@
       <div class="dialog-header"><h2>設定・データ管理</h2><button class="icon-button" type="button" data-close-dialog="settings-dialog" aria-label="閉じる">×</button></div>
       <p class="settings-copy">データはこのブラウザだけに保存されます。端末変更やサイトデータ削除に備え、定期的にCSVを保存してください。</p>
       <button id="export-csv-button" class="primary-button" type="button">CSVをエクスポート</button>
+
+      <div class="settings-divider" role="separator"></div>
+
+      <fieldset class="import-mode">
+        <legend>インポート方法</legend>
+        <label class="radio-option"><input type="radio" name="import-mode" value="append" checked />追記（既存データに追加）</label>
+        <label class="radio-option"><input type="radio" name="import-mode" value="replace" />上書き（既存データをすべて削除して置き換え）</label>
+      </fieldset>
+      <input id="import-csv-input" class="hidden" type="file" accept=".csv,text/csv" />
+      <button id="import-csv-button" class="primary-button" type="button">CSVをインポート</button>
     </dialog>
 
     <dialog id="help-dialog" class="app-dialog">
@@ -98,6 +114,7 @@
         <p><strong>TOTAL</strong> は、登録済みのすべての支出を割り勘後の金額で集計した、あなたの実質負担額です。</p>
         <p>右のドーナツグラフは、すべての小冊子に設定した予算の合計に対して、実質負担額がどれくらいの割合かを表します。予算を設定していない場合は「—」と表示されます。</p>
         <p>各小冊子の画面でも同じように、その小冊子の予算に対する実質負担額の割合をドーナツグラフで確認できます。</p>
+        <p>支出登録画面の「レシートを読み取る」は、写真から合計金額らしき数字を自動で拾う簡易機能です。読み取り精度は完璧ではないため、金額は必ず確認・修正してください。</p>
       </div>
     </dialog>
 
