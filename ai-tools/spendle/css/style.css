@@ -294,25 +294,27 @@ h2 {
   bottom: 0;
   z-index: -1;
   background-image:
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 C10 0,10 0,20 5 C30 10,30 10,40 5 V10 H0 Z' fill='rgba(70,170,230,0.45)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='26' viewBox='0 0 300 26'><path d='M0 14 C 30 3,55 1,82 13 C 102 22,125 25,150 15 C 168 8,187 3,213 13 C 235 21,258 24,300 14 V26 H0 Z' fill='rgba(70,170,230,0.4)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='20' viewBox='0 0 220 20'><path d='M0 11 C 20 3,38 2,58 10 C 78 18,96 19,116 11 C 134 4,150 2,168 9 C 186 16,202 18,220 10 V20 H0 Z' fill='rgba(150,205,240,0.35)'/></svg>"),
     linear-gradient(180deg, rgba(0, 118, 197, 0.24), rgba(0, 118, 197, 0.1));
-  background-repeat: repeat-x, no-repeat;
-  background-position: 0 top, top left;
-  background-size: 40px 10px, 100% 100%;
+  background-repeat: repeat-x, repeat-x, no-repeat;
+  background-position: 0 top, 0 top, top left;
+  background-size: 300px 26px, 220px 20px, 100% 100%;
   transition: height 0.4s ease;
-  animation: category-wave-scroll 3.2s linear infinite;
+  animation: category-wave-scroll 20s linear infinite;
   pointer-events: none;
 }
 
 .category-fill--over {
   background-image:
-    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='10' viewBox='0 0 40 10'><path d='M0 5 C10 0,10 0,20 5 C30 10,30 10,40 5 V10 H0 Z' fill='rgba(214,90,105,0.45)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='26' viewBox='0 0 300 26'><path d='M0 14 C 30 3,55 1,82 13 C 102 22,125 25,150 15 C 168 8,187 3,213 13 C 235 21,258 24,300 14 V26 H0 Z' fill='rgba(214,90,105,0.4)'/></svg>"),
+    url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='20' viewBox='0 0 220 20'><path d='M0 11 C 20 3,38 2,58 10 C 78 18,96 19,116 11 C 134 4,150 2,168 9 C 186 16,202 18,220 10 V20 H0 Z' fill='rgba(235,160,170,0.35)'/></svg>"),
     linear-gradient(180deg, rgba(196, 54, 75, 0.28), rgba(196, 54, 75, 0.12));
 }
 
 @keyframes category-wave-scroll {
-  from { background-position: 0 top, top left; }
-  to { background-position: -40px top, top left; }
+  from { background-position: 0 top, 0 top, top left; }
+  to { background-position: -300px top, -440px top, top left; }
 }
 
 @media (prefers-reduced-motion: reduce) {
