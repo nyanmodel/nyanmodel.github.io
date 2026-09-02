@@ -10,6 +10,9 @@ const legacyEmojiIcons = {
   "💻": "bi-pc-display", "🛒": "bi-cart", "🏠": "bi-house", "🎮": "bi-controller",
   "🎁": "bi-gift", "📚": "bi-book", "🍻": "bi-cup-straw", "✨": "bi-stars"
 };
+// Must stay >= the wave mask's max y in css/style.css (.category-fill), so the
+// mask's lowest point (not its box edge) lines up with the budget percentage.
+const WAVE_CREST_PX = 20;
 let data = migrateLegacyEmojiIcons(loadData());
 let selectedCategoryId = null;
 let selectedIcon = icons[0];
@@ -65,7 +68,10 @@ function renderCategories() {
     const card = document.createElement("button"); card.type = "button"; card.className = "category-card"; card.setAttribute("aria-label", `${category.name}を開く`);
     const budget = getCategoryBudget(category); const burden = calculateCategoryBurden(data.expenses, category.id);
     if (budget) {
-      const fill = document.createElement("span"); fill.className = `category-fill${burden > budget ? " category-fill--over" : ""}`; fill.style.height = `${Math.min((burden / budget) * 100, 100)}%`; fill.setAttribute("aria-hidden", "true");
+      const fill = document.createElement("span"); fill.className = `category-fill${burden > budget ? " category-fill--over" : ""}`;
+      const percent = Math.min((burden / budget) * 100, 100);
+      fill.style.height = percent > 0 ? `calc(${percent}% + ${WAVE_CREST_PX}px)` : "0";
+      fill.setAttribute("aria-hidden", "true");
       card.append(fill);
     }
     const icon = createCategoryIcon(category.icon, "category-icon");
