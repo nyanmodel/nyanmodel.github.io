@@ -2,8 +2,10 @@
 <html lang="ja">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <meta name="theme-color" content="#635bff" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#c4d7e7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <title>Spendle</title>
     <link rel="icon" href="img/dna-solid-full.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
@@ -37,7 +39,7 @@
 
       <section id="home-view">
         <div class="section-heading">
-          <h2>小冊子</h2>
+          <h2>BOOKS</h2>
           <button id="add-category-button" class="text-button" type="button">＋ 作成</button>
         </div>
         <div id="category-list" class="category-grid" aria-live="polite"></div>
@@ -59,7 +61,7 @@
       </section>
     </main>
 
-    <button id="add-expense-button" class="primary-fab" type="button">＋ 支出を登録</button>
+    <button id="add-expense-button" class="primary-fab" type="button" aria-label="支出を登録"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></button>
 
     <dialog id="expense-dialog" class="app-dialog">
       <form id="expense-form" novalidate>
