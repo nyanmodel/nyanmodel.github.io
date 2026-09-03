@@ -12,18 +12,18 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <main class="app-shell">
-      <header class="app-header">
-        <button id="back-button" class="icon-button hidden" type="button" aria-label="トップへ戻る">←</button>
-        <div>
-          <h1 id="page-title" class="app-logo">Spendle.</h1>
-        </div>
-        <button id="help-button" class="icon-button" type="button" aria-label="使い方"><i class="bi bi-question-circle" aria-hidden="true"></i></button>
-        <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理"><i class="bi bi-gear" aria-hidden="true"></i></button>
-      </header>
+    <main class="app-shell app-shell--home">
+      <div class="app-hero">
+        <header class="app-header">
+          <button id="back-button" class="icon-button hidden" type="button" aria-label="トップへ戻る">←</button>
+          <div>
+            <h1 id="page-title" class="app-logo">Spendle.</h1>
+          </div>
+          <button id="help-button" class="icon-button" type="button" aria-label="使い方"><i class="bi bi-question-circle" aria-hidden="true"></i></button>
+          <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理"><i class="bi bi-gear" aria-hidden="true"></i></button>
+        </header>
 
-      <section id="home-view">
-        <section class="dashboard-band" aria-label="実質負担額と全小冊子の予算">
+        <section id="dashboard-band" class="dashboard-band" aria-label="実質負担額と全小冊子の予算">
           <div class="dashboard-band-inner">
             <div class="dashboard-band-total">
               <p class="dashboard-band-eyebrow">TOTAL</p>
@@ -33,7 +33,9 @@
             <div class="donut-chart-wrap donut-chart-wrap--inverted"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></div>
           </div>
         </section>
+      </div>
 
+      <section id="home-view">
         <div class="section-heading">
           <h2>小冊子</h2>
           <button id="add-category-button" class="text-button" type="button">＋ 作成</button>

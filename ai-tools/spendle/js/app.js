@@ -18,6 +18,7 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 
 const elements = {
+  appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
   backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
   homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
@@ -84,13 +85,13 @@ function renderCategories() {
 
 function openCategory(categoryId) {
   selectedCategoryId = categoryId;
-  elements.homeView.classList.add("hidden"); elements.categoryView.classList.remove("hidden"); elements.backButton.classList.remove("hidden"); elements.helpButton.classList.add("hidden"); elements.settingsButton.classList.add("hidden"); elements.addCategoryButton.classList.add("hidden");
+  elements.appShell.classList.remove("app-shell--home"); elements.dashboardBand.classList.add("hidden"); elements.homeView.classList.add("hidden"); elements.categoryView.classList.remove("hidden"); elements.backButton.classList.remove("hidden"); elements.helpButton.classList.add("hidden"); elements.settingsButton.classList.add("hidden"); elements.addCategoryButton.classList.add("hidden");
   renderCategoryDetail();
 }
 
 function returnHome() {
   selectedCategoryId = null;
-  elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
+  elements.appShell.classList.add("app-shell--home"); elements.dashboardBand.classList.remove("hidden"); elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
   elements.pageTitle.textContent = "Spendle."; elements.pageTitle.classList.add("app-logo");
 }
 
