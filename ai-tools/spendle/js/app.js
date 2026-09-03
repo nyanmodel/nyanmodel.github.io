@@ -67,9 +67,10 @@ function renderCategories() {
   if (!categories.length) { elements.categoryList.append(elements.emptyCategories.content.cloneNode(true)); return; }
   categories.forEach((category) => {
     const card = document.createElement("button"); card.type = "button"; card.className = "category-card"; card.setAttribute("aria-label", `${category.name}を開く`);
-    const budget = getCategoryBudget(category); const burden = calculateCategoryBurden(data.expenses, category.id);
+    const budget = getCategoryBudget(category); const burden = calculateCategoryBurden(data.expenses, category.id); const expenseCount = data.expenses.filter((expense) => expense.categoryId === category.id).length;
     if (budget) {
-      const fill = document.createElement("span"); fill.className = `category-fill${burden > budget ? " category-fill--over" : ""}`;
+      const fillState = burden > budget ? " category-fill--over" : burden / budget >= 0.8 ? " category-fill--warning" : "";
+      const fill = document.createElement("span"); fill.className = `category-fill${fillState}`;
       const percent = Math.min((burden / budget) * 100, 100);
       fill.style.height = percent > 0 ? `calc(${percent}% + ${WAVE_CREST_PX}px)` : "0";
       fill.setAttribute("aria-hidden", "true");
@@ -78,8 +79,15 @@ function renderCategories() {
     const icon = createCategoryIcon(category.icon, "category-icon");
     const name = document.createElement("span"); name.className = "category-name"; name.textContent = category.name;
     const amount = document.createElement("span"); amount.className = "category-amount"; amount.textContent = formatYen(burden);
-    const count = document.createElement("span"); count.className = "category-count"; count.textContent = budget ? `予算 ${formatYen(budget)} ・ ${data.expenses.filter((expense) => expense.categoryId === category.id).length}件` : `${data.expenses.filter((expense) => expense.categoryId === category.id).length}件`;
-    card.append(icon, name, amount, count); card.addEventListener("click", () => openCategory(category.id)); elements.categoryList.append(card);
+    const meta = document.createElement("span");
+    if (budget) {
+      meta.className = "category-meta";
+      const balance = document.createElement("span"); balance.className = `category-balance${burden > budget ? " category-balance--over" : ""}`; balance.textContent = burden > budget ? `予算を ${formatYen(burden - budget)} 超過 ・ ${expenseCount}件` : `残り ${formatYen(budget - burden)} ・ ${expenseCount}件`;
+      meta.append(balance);
+    } else {
+      meta.className = "category-count"; meta.textContent = `${expenseCount}件`;
+    }
+    card.append(icon, name, amount, meta); card.addEventListener("click", () => openCategory(category.id)); elements.categoryList.append(card);
   });
 }
 
@@ -212,7 +220,7 @@ function renderBudgetChart(totalBurden, totalBudget) {
   elements.totalBudgetNote.classList.toggle("hidden", !totalBudget);
   if (totalBudget) elements.totalBudget.textContent = formatYen(totalBudget);
   drawDonut(elements.budgetDonutChart, elements.budgetPercentage, totalBurden, totalBudget, {
-    radius: 52, lineWidth: 15, trackColor: "rgba(255, 255, 255, 0.3)", progressColor: "#ffffff", overBudgetColor: "#ffb4c0",
+    radius: 52, lineWidth: 15, trackColor: "rgba(0, 76, 160, 0.12)", progressColor: "#004ca0", overBudgetColor: "#c0364b",
   });
 }
 

@@ -5,8 +5,8 @@
   "lang": "ja",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#EAF4FB",
-  "theme_color": "#004CA0",
+  "background_color": "#c4d7e7",
+  "theme_color": "#c4d7e7",
   "icons": [
     {
       "src": "img/pwa-icon.svg",
