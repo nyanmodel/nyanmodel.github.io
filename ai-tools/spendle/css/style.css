@@ -77,12 +77,40 @@ button {
   padding: 20px 16px 110px;
 }
 
+.app-hero {
+  display: contents;
+}
+
+.app-shell--home {
+  padding-top: 0;
+}
+
+.app-shell--home .app-hero {
+  position: relative;
+  left: 50%;
+  display: block;
+  width: 100vw;
+  margin-left: -50vw;
+  margin-bottom: 28px;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(0, 91, 190, 0.94), rgba(0, 61, 129, 0.88));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
 .app-header {
   display: flex;
   align-items: center;
   gap: 12px;
   min-height: 52px;
   margin-bottom: 22px;
+}
+
+.app-shell--home .app-header {
+  width: 100%;
+  max-width: 720px;
+  min-height: 72px;
+  margin: 0 auto;
+  padding: calc(10px + env(safe-area-inset-top)) 16px 6px;
 }
 
 .app-header > div {
@@ -108,6 +136,10 @@ h2 {
   letter-spacing: -0.03em;
 }
 
+.app-shell--home .app-logo {
+  color: #fff;
+}
+
 .hidden {
   display: none !important;
 }
@@ -124,6 +156,18 @@ h2 {
   box-shadow: 0 5px 16px rgba(20, 70, 108, 0.08);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+}
+
+.app-shell--home .app-header .icon-button {
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 5px 16px rgba(0, 38, 82, 0.2);
+}
+
+.app-shell--home .app-header .icon-button:hover,
+.app-shell--home .app-header .icon-button:focus-visible {
+  background: rgba(255, 255, 255, 0.24);
 }
 
 .summary-label {
@@ -144,18 +188,8 @@ h2 {
 }
 
 .dashboard-band {
-  position: relative;
-  left: 50%;
-  right: 50%;
-  width: 100vw;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  margin-bottom: 28px;
-  padding: 20px 0;
+  padding: 8px 0 24px;
   color: #fff;
-  background: linear-gradient(135deg, rgba(0, 91, 190, 0.88), rgba(0, 61, 129, 0.76));
-  border-top: 1px solid rgba(255, 255, 255, 0.32);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
 }
 
 .dashboard-band-inner {
@@ -748,6 +782,9 @@ h2 {
 @media (min-width: 600px) {
   .app-shell {
     padding-top: 32px;
+  }
+  .app-shell--home {
+    padding-top: 0;
   }
   .category-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
