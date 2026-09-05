@@ -18,7 +18,7 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 
 const elements = {
-  appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
+  ambientBackground: document.querySelector("#ambient-background"), appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
   backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
   homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
@@ -32,6 +32,27 @@ function formatYen(amount) { return `¥${new Intl.NumberFormat("ja-JP").format(a
 function today() { return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10); }
 function formatDate(date) { return date.replaceAll("-", "/"); }
 function persistAndRender() { saveData(data); render(); }
+
+let ambientScrollFrame = 0;
+
+function updateAmbientBackground() {
+  ambientScrollFrame = 0;
+  if (!elements.ambientBackground || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const phase = window.scrollY / Math.max(window.innerHeight, 1);
+  elements.ambientBackground.style.setProperty("--ambient-x", `${Math.sin(phase * 1.15) * 26}px`);
+  elements.ambientBackground.style.setProperty("--ambient-y", `${Math.cos(phase * 0.82) * 18}px`);
+  elements.ambientBackground.style.setProperty("--ambient-tilt", `${Math.sin(phase * 0.58) * 1.4}deg`);
+}
+
+function requestAmbientBackgroundUpdate() {
+  if (!ambientScrollFrame) ambientScrollFrame = window.requestAnimationFrame(updateAmbientBackground);
+}
+
+function softenAmbientViewTransition() {
+  if (!elements.ambientBackground || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  elements.ambientBackground.classList.remove("ambient-background--transitioning");
+  window.requestAnimationFrame(() => elements.ambientBackground.classList.add("ambient-background--transitioning"));
+}
 
 function migrateLegacyEmojiIcons(savedData) {
   let hasChanges = false;
@@ -92,12 +113,14 @@ function renderCategories() {
 }
 
 function openCategory(categoryId) {
+  softenAmbientViewTransition();
   selectedCategoryId = categoryId;
   elements.appShell.classList.remove("app-shell--home"); elements.dashboardBand.classList.add("hidden"); elements.homeView.classList.add("hidden"); elements.categoryView.classList.remove("hidden"); elements.backButton.classList.remove("hidden"); elements.helpButton.classList.add("hidden"); elements.settingsButton.classList.add("hidden"); elements.addCategoryButton.classList.add("hidden");
   renderCategoryDetail();
 }
 
 function returnHome() {
+  softenAmbientViewTransition();
   selectedCategoryId = null;
   elements.appShell.classList.add("app-shell--home"); elements.dashboardBand.classList.remove("hidden"); elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
   elements.pageTitle.textContent = "Spendle."; elements.pageTitle.classList.add("app-logo");
@@ -256,27 +279,41 @@ function handleCsvFileSelected(event) {
 }
 
 function importExpensesFromCsv(text, mode) {
-  const { rows, invalidCount } = parseExpensesCsv(text);
-  if (!rows.length) { window.alert("読み込める支出データが見つかりませんでした。"); return; }
+  const { categories, rows, invalidCount, format } = parseExpensesCsv(text);
+  if (!categories.length && !rows.length && format !== "backup") { window.alert("読み込めるバックアップデータが見つかりませんでした。"); return; }
   if (mode === "replace") {
     if (!window.confirm(`既存の小冊子・支出をすべて削除して、CSVの内容に置き換えます。よろしいですか？`)) return;
     data.categories = []; data.expenses = [];
   }
+  const categoryIdMap = new Map();
+  let importedCategories = 0; let imported = 0; let duplicates = 0;
+  [...categories].sort((first, second) => first.order - second.order).forEach((importedCategory) => {
+    const existing = data.categories.find((category) => category.id === importedCategory.id);
+    if (existing) { categoryIdMap.set(importedCategory.id, existing.id); return; }
+    const order = mode === "append" ? data.categories.length : importedCategory.order;
+    const category = createCategory(importedCategory.name, importedCategory.icon, order, importedCategory.budget);
+    Object.assign(category, { id: importedCategory.id, createdAt: importedCategory.createdAt || category.createdAt });
+    data.categories.push(category);
+    categoryIdMap.set(importedCategory.id, category.id);
+    importedCategories++;
+  });
   const categoryIdByName = new Map(data.categories.map((category) => [category.name, category.id]));
-  let imported = 0; let duplicates = 0;
   rows.forEach((row) => {
-    let categoryId = categoryIdByName.get(row.categoryName);
+    let categoryId = row.categoryId ? categoryIdMap.get(row.categoryId) : categoryIdByName.get(row.categoryName);
     if (!categoryId) {
       const category = createCategory(row.categoryName, icons[0], data.categories.length, 0);
-      data.categories.push(category); categoryIdByName.set(category.name, category.id); categoryId = category.id;
+      data.categories.push(category); categoryIdByName.set(category.name, category.id); categoryId = category.id; importedCategories++;
     }
-    const isDuplicate = data.expenses.some((expense) => expense.categoryId === categoryId && expense.date === row.date && expense.name === row.name && expense.amount === row.amount && expense.people === row.people);
+    const isDuplicate = data.expenses.some((expense) => (row.id && expense.id === row.id) || (expense.categoryId === categoryId && expense.date === row.date && expense.name === row.name && expense.amount === row.amount && expense.people === row.people));
     if (isDuplicate) { duplicates++; return; }
-    data.expenses.push(createExpense({ name: row.name, amount: row.amount, people: row.people, categoryId, date: row.date }));
+    const expense = createExpense({ name: row.name, amount: row.amount, people: row.people, categoryId, date: row.date });
+    if (row.id) Object.assign(expense, { id: row.id, createdAt: row.createdAt || expense.createdAt });
+    data.expenses.push(expense);
     imported++;
   });
   persistAndRender();
-  const messages = [`${imported}件の支出を読み込みました。`];
+  const messages = [`${importedCategories}冊の小冊子と${imported}件の支出を読み込みました。`];
+  if (format === "legacy") messages.push("旧形式CSVのため、小冊子の予算・アイコン・順番は含まれていません。");
   if (duplicates) messages.push(`${duplicates}件は既存データと重複していたためスキップしました。`);
   if (invalidCount) messages.push(`${invalidCount}件は形式が不正なためスキップしました。`);
   window.alert(messages.join("\n"));
@@ -294,9 +331,12 @@ elements.addCategoryButton.addEventListener("click", () => openCategoryDialog())
 elements.expenseAmount.addEventListener("input", updateBurdenPreview); elements.expensePeople.addEventListener("input", updateBurdenPreview); elements.expenseForm.addEventListener("submit", saveExpense); elements.categoryForm.addEventListener("submit", saveCategory); elements.deleteCategoryButton.addEventListener("click", deleteCurrentCategory); elements.exportCsvButton.addEventListener("click", () => exportExpensesAsCsv(sortExpensesByDate(data.expenses), data.categories));
 elements.ocrScanButton.addEventListener("click", () => elements.ocrFileInput.click()); elements.ocrFileInput.addEventListener("change", handleReceiptScan);
 elements.importCsvButton.addEventListener("click", () => elements.importCsvInput.click()); elements.importCsvInput.addEventListener("change", handleCsvFileSelected);
-window.addEventListener("resize", render);
+elements.ambientBackground.addEventListener("animationend", () => elements.ambientBackground.classList.remove("ambient-background--transitioning"));
+window.addEventListener("scroll", requestAmbientBackgroundUpdate, { passive: true });
+window.addEventListener("resize", () => { render(); requestAmbientBackgroundUpdate(); });
 
 render();
+updateAmbientBackground();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
