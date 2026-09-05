@@ -279,27 +279,41 @@ function handleCsvFileSelected(event) {
 }
 
 function importExpensesFromCsv(text, mode) {
-  const { rows, invalidCount } = parseExpensesCsv(text);
-  if (!rows.length) { window.alert("読み込める支出データが見つかりませんでした。"); return; }
+  const { categories, rows, invalidCount, format } = parseExpensesCsv(text);
+  if (!categories.length && !rows.length && format !== "backup") { window.alert("読み込めるバックアップデータが見つかりませんでした。"); return; }
   if (mode === "replace") {
     if (!window.confirm(`既存の小冊子・支出をすべて削除して、CSVの内容に置き換えます。よろしいですか？`)) return;
     data.categories = []; data.expenses = [];
   }
+  const categoryIdMap = new Map();
+  let importedCategories = 0; let imported = 0; let duplicates = 0;
+  [...categories].sort((first, second) => first.order - second.order).forEach((importedCategory) => {
+    const existing = data.categories.find((category) => category.id === importedCategory.id);
+    if (existing) { categoryIdMap.set(importedCategory.id, existing.id); return; }
+    const order = mode === "append" ? data.categories.length : importedCategory.order;
+    const category = createCategory(importedCategory.name, importedCategory.icon, order, importedCategory.budget);
+    Object.assign(category, { id: importedCategory.id, createdAt: importedCategory.createdAt || category.createdAt });
+    data.categories.push(category);
+    categoryIdMap.set(importedCategory.id, category.id);
+    importedCategories++;
+  });
   const categoryIdByName = new Map(data.categories.map((category) => [category.name, category.id]));
-  let imported = 0; let duplicates = 0;
   rows.forEach((row) => {
-    let categoryId = categoryIdByName.get(row.categoryName);
+    let categoryId = row.categoryId ? categoryIdMap.get(row.categoryId) : categoryIdByName.get(row.categoryName);
     if (!categoryId) {
       const category = createCategory(row.categoryName, icons[0], data.categories.length, 0);
-      data.categories.push(category); categoryIdByName.set(category.name, category.id); categoryId = category.id;
+      data.categories.push(category); categoryIdByName.set(category.name, category.id); categoryId = category.id; importedCategories++;
     }
-    const isDuplicate = data.expenses.some((expense) => expense.categoryId === categoryId && expense.date === row.date && expense.name === row.name && expense.amount === row.amount && expense.people === row.people);
+    const isDuplicate = data.expenses.some((expense) => (row.id && expense.id === row.id) || (expense.categoryId === categoryId && expense.date === row.date && expense.name === row.name && expense.amount === row.amount && expense.people === row.people));
     if (isDuplicate) { duplicates++; return; }
-    data.expenses.push(createExpense({ name: row.name, amount: row.amount, people: row.people, categoryId, date: row.date }));
+    const expense = createExpense({ name: row.name, amount: row.amount, people: row.people, categoryId, date: row.date });
+    if (row.id) Object.assign(expense, { id: row.id, createdAt: row.createdAt || expense.createdAt });
+    data.expenses.push(expense);
     imported++;
   });
   persistAndRender();
-  const messages = [`${imported}件の支出を読み込みました。`];
+  const messages = [`${importedCategories}冊の小冊子と${imported}件の支出を読み込みました。`];
+  if (format === "legacy") messages.push("旧形式CSVのため、小冊子の予算・アイコン・順番は含まれていません。");
   if (duplicates) messages.push(`${duplicates}件は既存データと重複していたためスキップしました。`);
   if (invalidCount) messages.push(`${invalidCount}件は形式が不正なためスキップしました。`);
   window.alert(messages.join("\n"));

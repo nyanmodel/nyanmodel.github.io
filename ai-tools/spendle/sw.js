@@ -1,4 +1,4 @@
-const CACHE_NAME = "spendle-v2";
+const CACHE_NAME = "spendle-v3";
 const APP_SHELL = [
   "./",
   "./index.html",
