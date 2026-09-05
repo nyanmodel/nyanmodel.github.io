@@ -18,7 +18,7 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 
 const elements = {
-  appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
+  ambientBackground: document.querySelector("#ambient-background"), appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
   backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
   homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
@@ -32,6 +32,27 @@ function formatYen(amount) { return `¥${new Intl.NumberFormat("ja-JP").format(a
 function today() { return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10); }
 function formatDate(date) { return date.replaceAll("-", "/"); }
 function persistAndRender() { saveData(data); render(); }
+
+let ambientScrollFrame = 0;
+
+function updateAmbientBackground() {
+  ambientScrollFrame = 0;
+  if (!elements.ambientBackground || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const phase = window.scrollY / Math.max(window.innerHeight, 1);
+  elements.ambientBackground.style.setProperty("--ambient-x", `${Math.sin(phase * 1.15) * 26}px`);
+  elements.ambientBackground.style.setProperty("--ambient-y", `${Math.cos(phase * 0.82) * 18}px`);
+  elements.ambientBackground.style.setProperty("--ambient-tilt", `${Math.sin(phase * 0.58) * 1.4}deg`);
+}
+
+function requestAmbientBackgroundUpdate() {
+  if (!ambientScrollFrame) ambientScrollFrame = window.requestAnimationFrame(updateAmbientBackground);
+}
+
+function softenAmbientViewTransition() {
+  if (!elements.ambientBackground || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  elements.ambientBackground.classList.remove("ambient-background--transitioning");
+  window.requestAnimationFrame(() => elements.ambientBackground.classList.add("ambient-background--transitioning"));
+}
 
 function migrateLegacyEmojiIcons(savedData) {
   let hasChanges = false;
@@ -92,12 +113,14 @@ function renderCategories() {
 }
 
 function openCategory(categoryId) {
+  softenAmbientViewTransition();
   selectedCategoryId = categoryId;
   elements.appShell.classList.remove("app-shell--home"); elements.dashboardBand.classList.add("hidden"); elements.homeView.classList.add("hidden"); elements.categoryView.classList.remove("hidden"); elements.backButton.classList.remove("hidden"); elements.helpButton.classList.add("hidden"); elements.settingsButton.classList.add("hidden"); elements.addCategoryButton.classList.add("hidden");
   renderCategoryDetail();
 }
 
 function returnHome() {
+  softenAmbientViewTransition();
   selectedCategoryId = null;
   elements.appShell.classList.add("app-shell--home"); elements.dashboardBand.classList.remove("hidden"); elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
   elements.pageTitle.textContent = "Spendle."; elements.pageTitle.classList.add("app-logo");
@@ -294,9 +317,12 @@ elements.addCategoryButton.addEventListener("click", () => openCategoryDialog())
 elements.expenseAmount.addEventListener("input", updateBurdenPreview); elements.expensePeople.addEventListener("input", updateBurdenPreview); elements.expenseForm.addEventListener("submit", saveExpense); elements.categoryForm.addEventListener("submit", saveCategory); elements.deleteCategoryButton.addEventListener("click", deleteCurrentCategory); elements.exportCsvButton.addEventListener("click", () => exportExpensesAsCsv(sortExpensesByDate(data.expenses), data.categories));
 elements.ocrScanButton.addEventListener("click", () => elements.ocrFileInput.click()); elements.ocrFileInput.addEventListener("change", handleReceiptScan);
 elements.importCsvButton.addEventListener("click", () => elements.importCsvInput.click()); elements.importCsvInput.addEventListener("change", handleCsvFileSelected);
-window.addEventListener("resize", render);
+elements.ambientBackground.addEventListener("animationend", () => elements.ambientBackground.classList.remove("ambient-background--transitioning"));
+window.addEventListener("scroll", requestAmbientBackgroundUpdate, { passive: true });
+window.addEventListener("resize", () => { render(); requestAmbientBackgroundUpdate(); });
 
 render();
+updateAmbientBackground();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
