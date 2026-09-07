@@ -1,6 +1,6 @@
 {
-  "name": "Spendle",
-  "short_name": "Spendle",
+  "name": "Nyanfoglio.",
+  "short_name": "Nyanfoglio.",
   "description": "割り勘後の実質負担額を管理する、個人用の簡易支出管理アプリです。",
   "lang": "ja",
   "start_url": "./",

@@ -1,4 +1,5 @@
 import { calculateCategoryBurden, calculatePersonalBurden, calculateTotalBudget, createCategory, getCategoryById } from "./categories.js";
+import { createSpendingSeries } from "./charts.js";
 import { exportExpensesAsCsv, parseExpensesCsv } from "./csv.js";
 import { createExpense, sortExpensesByDate, validateExpense } from "./expenses.js";
 import { recognizeReceiptAmount } from "./ocr.js";
@@ -17,15 +18,17 @@ let data = migrateLegacyEmojiIcons(loadData());
 let selectedCategoryId = null;
 let selectedIcon = icons[0];
 let ocrRequestId = 0;
+let chartPeriod = "week";
+let homePage = 0;
 
 const elements = {
   ambientBackground: document.querySelector("#ambient-background"), ambientGradient: document.querySelector("#ambient-gradient"), appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
   backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
-  homeView: document.querySelector("#home-view"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
+  homeView: document.querySelector("#home-view"), homePages: document.querySelector("#home-pages"), homePagePanels: [...document.querySelectorAll(".home-page")], homePageContents: [...document.querySelectorAll(".home-page-content")], showChartButton: document.querySelector("#show-chart-button"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
+  chartSummaryLabel: document.querySelector("#chart-summary-label"), chartTotal: document.querySelector("#chart-total"), chartRange: document.querySelector("#chart-range"), spendingChart: document.querySelector("#spending-chart"), chartEmpty: document.querySelector("#chart-empty"), chartPeriodButtons: [...document.querySelectorAll("[data-chart-period]")], homePageButtons: [...document.querySelectorAll("[data-home-page]")],
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
   expenseDialog: document.querySelector("#expense-dialog"), expenseForm: document.querySelector("#expense-form"), expenseDialogTitle: document.querySelector("#expense-dialog-title"), expenseId: document.querySelector("#expense-id"), expenseName: document.querySelector("#expense-name"), expenseAmount: document.querySelector("#expense-amount"), expensePeople: document.querySelector("#expense-people"), expenseCategory: document.querySelector("#expense-category"), expenseDate: document.querySelector("#expense-date"), expenseError: document.querySelector("#expense-form-error"), burdenPreviewValue: document.querySelector("#burden-preview-value"), burdenPreviewNote: document.querySelector("#burden-preview-note"),
-  ocrLibraryButton: document.querySelector("#ocr-library-button"), ocrLibraryInput: document.querySelector("#ocr-library-input"), ocrCandidates: document.querySelector("#ocr-candidates"),
-  ocrScanButton: document.querySelector("#ocr-scan-button"), ocrFileInput: document.querySelector("#ocr-file-input"), ocrStatus: document.querySelector("#ocr-status"),
+  ocrImageButton: document.querySelector("#ocr-image-button"), ocrImageInput: document.querySelector("#ocr-image-input"), ocrCandidates: document.querySelector("#ocr-candidates"), ocrStatus: document.querySelector("#ocr-status"),
   categoryDialog: document.querySelector("#category-dialog"), categoryForm: document.querySelector("#category-form"), categoryDialogTitle: document.querySelector("#category-dialog-title"), categoryId: document.querySelector("#category-id"), categoryName: document.querySelector("#category-name"), categoryBudget: document.querySelector("#category-budget"), categoryError: document.querySelector("#category-form-error"), iconOptions: document.querySelector("#icon-options"), deleteCategoryButton: document.querySelector("#delete-category-button"),
   settingsDialog: document.querySelector("#settings-dialog"), exportCsvButton: document.querySelector("#export-csv-button"), importCsvButton: document.querySelector("#import-csv-button"), importCsvInput: document.querySelector("#import-csv-input"), helpDialog: document.querySelector("#help-dialog"), emptyCategories: document.querySelector("#empty-categories-template"), emptyExpenses: document.querySelector("#empty-expenses-template")
 };
@@ -84,7 +87,87 @@ function render() {
   elements.totalBurden.textContent = formatYen(total);
   renderBudgetChart(total, calculateTotalBudget(data.categories));
   renderCategories();
+  renderSpendingChart();
   if (selectedCategoryId) renderCategoryDetail();
+}
+
+function renderSpendingChart() {
+  const series = createSpendingSeries(data.expenses, chartPeriod, today());
+  const total = series.points.reduce((sum, point) => sum + point.amount, 0);
+  const maximum = Math.max(...series.points.map((point) => point.amount), 0);
+  elements.chartSummaryLabel.textContent = series.title;
+  elements.chartTotal.textContent = formatYen(total);
+  elements.chartRange.textContent = series.range;
+  elements.spendingChart.dataset.period = chartPeriod;
+  elements.spendingChart.setAttribute("aria-label", `${series.title}の実質負担額。合計${formatYen(total)}`);
+  elements.spendingChart.replaceChildren();
+  series.points.forEach((point) => {
+    const column = document.createElement("div"); column.className = `bar-column${point.current ? " current" : ""}`;
+    const amount = document.createElement("span"); amount.className = "bar-amount"; amount.textContent = formatCompactYen(point.amount); amount.title = formatYen(point.amount);
+    const track = document.createElement("span"); track.className = "bar-track";
+    const bar = document.createElement("span"); bar.className = "bar";
+    const height = maximum && point.amount ? Math.max((point.amount / maximum) * 100, 5) : 0;
+    bar.style.height = `${height}%`; track.append(bar);
+    const label = document.createElement("span"); label.className = "bar-label"; label.textContent = point.label;
+    const accessible = document.createElement("span"); accessible.className = "visually-hidden"; accessible.textContent = `${point.label} ${formatYen(point.amount)}`;
+    column.append(amount, track, label, accessible); elements.spendingChart.append(column);
+  });
+  elements.chartEmpty.classList.toggle("hidden", total > 0);
+}
+
+function formatCompactYen(amount) {
+  if (!amount) return "";
+  if (amount >= 10000) return `¥${new Intl.NumberFormat("ja-JP", { notation: "compact", maximumFractionDigits: 1 }).format(amount)}`;
+  return formatYen(amount);
+}
+
+function setChartPeriod(period) {
+  chartPeriod = period;
+  elements.chartPeriodButtons.forEach((button) => {
+    const selected = button.dataset.chartPeriod === period;
+    button.classList.toggle("selected", selected); button.setAttribute("aria-pressed", String(selected));
+  });
+  renderSpendingChart();
+}
+
+function showHomePage(index, smooth = true) {
+  homePage = index;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  elements.homePages.scrollTo({ left: elements.homePages.clientWidth * index, behavior: smooth && !reduceMotion ? "smooth" : "auto" });
+  updateHomePageIndicator();
+  if (!smooth || reduceMotion) updateHomePageTransition(index);
+}
+
+function updateHomePageIndicator() {
+  elements.homePageButtons.forEach((button, index) => {
+    const selected = index === homePage;
+    button.classList.toggle("selected", selected); button.setAttribute("aria-pressed", String(selected));
+  });
+}
+
+let homePageScrollFrame = 0;
+function updateHomePageTransition(rawProgress) {
+  const progress = Math.max(0, Math.min(1, rawProgress));
+  const easedProgress = progress * progress * (3 - 2 * progress);
+  elements.homePageContents[0].style.opacity = String(1 - easedProgress);
+  elements.homePageContents[1].style.opacity = String(easedProgress);
+  const activePage = progress < 0.5 ? 0 : 1;
+  elements.homePagePanels.forEach((panel, index) => {
+    const active = index === activePage;
+    panel.inert = !active;
+    panel.setAttribute("aria-hidden", String(!active));
+  });
+}
+
+function handleHomePageScroll() {
+  if (homePageScrollFrame) return;
+  homePageScrollFrame = window.requestAnimationFrame(() => {
+    homePageScrollFrame = 0;
+    const progress = elements.homePages.scrollLeft / Math.max(elements.homePages.clientWidth, 1);
+    updateHomePageTransition(progress);
+    const nextPage = Math.max(0, Math.min(1, Math.round(progress)));
+    if (nextPage !== homePage) { homePage = nextPage; updateHomePageIndicator(); }
+  });
 }
 
 function renderCategories() {
@@ -128,7 +211,7 @@ function returnHome() {
   softenAmbientViewTransition();
   selectedCategoryId = null;
   elements.appShell.classList.add("app-shell--home"); elements.dashboardBand.classList.remove("hidden"); elements.homeView.classList.remove("hidden"); elements.categoryView.classList.add("hidden"); elements.backButton.classList.add("hidden"); elements.helpButton.classList.remove("hidden"); elements.settingsButton.classList.remove("hidden"); elements.addCategoryButton.classList.remove("hidden");
-  elements.pageTitle.textContent = "Spendle."; elements.pageTitle.classList.add("app-logo");
+  elements.pageTitle.textContent = "Nyanfoglio."; elements.pageTitle.classList.add("app-logo");
 }
 
 function renderCategoryDetail() {
@@ -165,7 +248,7 @@ function populateCategorySelect(selectedId) {
 function openExpenseDialog(expense = null) {
   if (!data.categories.length) { window.alert("先に小冊子を1つ作成してください。"); openCategoryDialog(); return; }
   ocrRequestId++;
-  elements.ocrScanButton.disabled = elements.ocrLibraryButton.disabled = false;
+  elements.ocrImageButton.disabled = false;
   elements.ocrCandidates.replaceChildren(); elements.ocrCandidates.classList.add("hidden");
   elements.expenseForm.reset(); elements.expenseError.textContent = ""; elements.expenseId.value = expense?.id || ""; elements.expenseDialogTitle.textContent = expense ? "支出を編集" : "支出を登録";
   elements.expenseName.value = expense?.name || ""; elements.expenseAmount.value = expense?.amount || ""; elements.expensePeople.value = expense?.people || 1; elements.expenseDate.value = expense?.date || today();
@@ -185,7 +268,7 @@ async function handleReceiptScan(event) {
   if (!file) return;
   const requestId = ++ocrRequestId;
   const originalAmount = elements.expenseAmount.value;
-  elements.ocrScanButton.disabled = elements.ocrLibraryButton.disabled = true;
+  elements.ocrImageButton.disabled = true;
   elements.ocrCandidates.replaceChildren(); elements.ocrCandidates.classList.add("hidden");
   setOcrStatus("読み取り中… 初回は少し時間がかかります。");
   try {
@@ -204,8 +287,11 @@ async function handleReceiptScan(event) {
       else setOcrStatus("金額候補を選ぶか、合計金額を手入力してください。小計は税込合計と異なる場合があります。", true);
       candidates.forEach(candidate => {
         const button = document.createElement("button");
-        button.type = "button"; button.className = "secondary-button";
-        button.textContent = `${candidate.label} ${formatYen(candidate.amount)}`;
+        button.type = "button"; button.className = "ocr-candidate";
+        const label = document.createElement("span"); label.className = "ocr-candidate__label"; label.textContent = candidate.label;
+        const amount = document.createElement("strong"); amount.className = "ocr-candidate__amount"; amount.textContent = formatYen(candidate.amount);
+        const arrow = document.createElement("i"); arrow.className = "bi bi-chevron-right ocr-candidate__arrow"; arrow.setAttribute("aria-hidden", "true");
+        button.append(label, amount, arrow);
         button.addEventListener("click", () => useCandidate(candidate));
         elements.ocrCandidates.append(button);
       });
@@ -216,7 +302,7 @@ async function handleReceiptScan(event) {
     console.warn("Receipt OCR failed.", error);
     setOcrStatus("読み取りに失敗しました。別の写真（JPEG・PNGなど）を選ぶか、手入力してください。", true);
   } finally {
-    if (requestId === ocrRequestId) elements.ocrScanButton.disabled = elements.ocrLibraryButton.disabled = false;
+    if (requestId === ocrRequestId) elements.ocrImageButton.disabled = false;
   }
 }
 
@@ -357,14 +443,18 @@ function deleteCurrentCategory() {
 document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => document.querySelector(`#${button.dataset.closeDialog}`).close()));
 elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.helpButton.addEventListener("click", () => elements.helpDialog.showModal()); elements.settingsButton.addEventListener("click", () => elements.settingsDialog.showModal());
 elements.expenseAmount.addEventListener("input", updateBurdenPreview); elements.expensePeople.addEventListener("input", updateBurdenPreview); elements.expenseForm.addEventListener("submit", saveExpense); elements.categoryForm.addEventListener("submit", saveCategory); elements.deleteCategoryButton.addEventListener("click", deleteCurrentCategory); elements.exportCsvButton.addEventListener("click", () => exportExpensesAsCsv(sortExpensesByDate(data.expenses), data.categories));
-elements.ocrLibraryButton.addEventListener("click", () => elements.ocrLibraryInput.click()); elements.ocrLibraryInput.addEventListener("change", handleReceiptScan);
-elements.ocrScanButton.addEventListener("click", () => elements.ocrFileInput.click()); elements.ocrFileInput.addEventListener("change", handleReceiptScan);
+elements.ocrImageButton.addEventListener("click", () => elements.ocrImageInput.click()); elements.ocrImageInput.addEventListener("change", handleReceiptScan);
 elements.importCsvButton.addEventListener("click", () => elements.importCsvInput.click()); elements.importCsvInput.addEventListener("change", handleCsvFileSelected);
+elements.showChartButton.addEventListener("click", () => showHomePage(1));
+elements.homePageButtons.forEach((button) => button.addEventListener("click", () => showHomePage(Number(button.dataset.homePage))));
+elements.chartPeriodButtons.forEach((button) => button.addEventListener("click", () => setChartPeriod(button.dataset.chartPeriod)));
+elements.homePages.addEventListener("scroll", handleHomePageScroll, { passive: true });
 elements.ambientGradient.addEventListener("animationend", () => elements.ambientGradient.classList.remove("ambient-background--transitioning"));
 window.addEventListener("scroll", requestAmbientBackgroundUpdate, { passive: true });
-window.addEventListener("resize", () => { render(); requestAmbientBackgroundUpdate(); });
+window.addEventListener("resize", () => { render(); showHomePage(homePage, false); requestAmbientBackgroundUpdate(); });
 
 render();
+updateHomePageTransition(homePage);
 updateAmbientBackground();
 
 if ("serviceWorker" in navigator) {
