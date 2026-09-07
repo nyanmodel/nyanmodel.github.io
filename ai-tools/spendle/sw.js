@@ -1,4 +1,4 @@
-const CACHE_NAME = "spendle-v3";
+const CACHE_NAME = "spendle-v4";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -11,8 +11,7 @@ const APP_SHELL = [
   "./js/ocr.js",
   "./manifest.webmanifest",
   "./img/dna-solid-full.svg",
-  "./img/pwa-icon.svg",
-  "./img/apple-touch-icon.png"
+  "./img/pwa-icon.svg"
 ];
 
 self.addEventListener("install", (event) => {
