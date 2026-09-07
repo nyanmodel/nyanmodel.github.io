@@ -14,7 +14,9 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <div id="ambient-background" class="ambient-background" aria-hidden="true"></div>
+    <div id="ambient-background" class="ambient-background" aria-hidden="true">
+      <div id="ambient-gradient" class="ambient-gradient"><span class="ambient-accent"></span></div>
+    </div>
     <main class="app-shell app-shell--home">
       <div class="app-hero">
         <header class="app-header">
@@ -69,7 +71,10 @@
         <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
         <input id="expense-id" type="hidden" />
         <div class="ocr-trigger">
-          <button id="ocr-scan-button" class="secondary-button" type="button"><i class="bi bi-camera" aria-hidden="true"></i>レシートを読み取る</button>
+          <button id="ocr-scan-button" class="secondary-button" type="button"><i class="bi bi-camera" aria-hidden="true"></i>撮影して読み取る</button>
+          <button id="ocr-library-button" class="secondary-button" type="button"><i class="bi bi-images" aria-hidden="true"></i>ライブラリから選ぶ</button>
+          <input id="ocr-library-input" class="hidden" type="file" accept="image/*" />
+          <div id="ocr-candidates" class="ocr-candidates hidden" aria-label="読み取った金額候補"></div>
           <input id="ocr-file-input" class="hidden" type="file" accept="image/*" capture="environment" />
           <p id="ocr-status" class="ocr-status hidden" role="status"></p>
         </div>
@@ -119,7 +124,7 @@
         <p><strong>TOTAL</strong> は、登録済みのすべての支出を割り勘後の金額で集計した、あなたの実質負担額です。</p>
         <p>右のドーナツグラフは、すべての小冊子に設定した予算の合計に対して、実質負担額がどれくらいの割合かを表します。予算を設定していない場合は「—」と表示されます。</p>
         <p>各小冊子の画面でも同じように、その小冊子の予算に対する実質負担額の割合をドーナツグラフで確認できます。</p>
-        <p>支出登録画面の「レシートを読み取る」は、写真から合計金額らしき数字を自動で拾う簡易機能です。読み取り精度は完璧ではないため、金額は必ず確認・修正してください。</p>
+        <p>支出登録画面では、撮影またはライブラリの写真から日本語の合計・支払額を優先して読み取ります。小計などの候補はタップして選べます。初回は読み取り用データのダウンロードが必要です。読み取り精度は完璧ではないため、金額は必ず確認・修正してください。</p>
       </div>
     </dialog>
 

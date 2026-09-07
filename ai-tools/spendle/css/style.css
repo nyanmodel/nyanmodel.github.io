@@ -29,12 +29,22 @@ body {
 }
 
 .ambient-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-gradient {
   --ambient-x: 0px;
   --ambient-y: 0px;
   --ambient-tilt: 0deg;
-  position: fixed;
+  --ambient-accent-x: -34vw;
+  --ambient-accent-y: 42vh;
+  position: absolute;
   inset: -18vh -18vw;
-  z-index: 0;
+  z-index: 1;
   overflow: hidden;
   background:
     radial-gradient(circle at 14% 18%, rgba(132, 228, 248, 0.46), transparent 44%),
@@ -51,29 +61,44 @@ body {
   transform-origin: center;
   transition: transform 220ms cubic-bezier(0.2, 0.7, 0.3, 1), opacity 420ms ease;
   will-change: transform, opacity;
-  pointer-events: none;
 }
 
 .ambient-background::before,
-.ambient-background::after {
+.ambient-gradient::after {
   position: absolute;
   inset: 0;
   content: "";
 }
 
 .ambient-background::before {
+  z-index: 2;
   background:
     linear-gradient(rgba(255, 255, 255, 0.11) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.11) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
-.ambient-background::after {
+.ambient-gradient::after {
   inset: 18%;
   background:
     radial-gradient(circle at 0% 50%, rgba(30, 210, 242, 0.26), transparent 48%),
     radial-gradient(circle at 100% 50%, rgba(255, 103, 168, 0.26), transparent 48%);
   filter: blur(70px);
+}
+
+.ambient-accent {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: min(72vmax, 900px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(126, 104, 238, 0.34) 0%, rgba(151, 123, 240, 0.18) 38%, transparent 70%);
+  filter: blur(24px);
+  transform: translate3d(calc(-50% + var(--ambient-accent-x)), calc(-50% + var(--ambient-accent-y)), 0);
+  transition: transform 260ms cubic-bezier(0.2, 0.7, 0.3, 1);
+  will-change: transform;
 }
 
 .ambient-background--transitioning {
@@ -390,8 +415,13 @@ h2 {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .ambient-background {
+  .ambient-gradient {
     transform: scale(1.06);
+    transition: none;
+  }
+
+  .ambient-accent {
+    transform: translate3d(calc(-50% - 34vw), calc(-50% + 42vh), 0);
     transition: none;
   }
 
@@ -785,6 +815,11 @@ h2 {
 .secondary-button:disabled {
   opacity: 0.6;
   pointer-events: none;
+}
+
+.ocr-candidates {
+  display: grid;
+  gap: 6px;
 }
 
 .ocr-status {
