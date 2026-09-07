@@ -6,7 +6,29 @@
     <meta name="theme-color" content="#c4d7e7" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <title>Spendle</title>
+    <title>Nyanfoglio. | シンプルな支出管理</title>
+    <meta name="description" content="割り勘後の実質負担額を、やさしく見える化するシンプルな支出管理アプリ。" />
+    <link rel="canonical" href="https://nyanmodel.com/ai-tools/spendle/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:site_name" content="Nyanfoglio." />
+    <meta property="og:title" content="Nyanfoglio. | シンプルな支出管理" />
+    <meta property="og:description" content="割り勘後の実質負担額を、やさしく見える化するシンプルな支出管理アプリ。" />
+    <meta property="og:url" content="https://nyanmodel.com/ai-tools/spendle/" />
+    <meta property="og:image" content="https://nyanmodel.com/ai-tools/spendle/img/og-image.png" />
+    <meta property="og:image:secure_url" content="https://nyanmodel.com/ai-tools/spendle/img/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Nyanfoglio. — 支出をまとめて、わたしの負担を見える化。" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@NyanModel" />
+    <meta name="twitter:title" content="Nyanfoglio. | シンプルな支出管理" />
+    <meta name="twitter:description" content="割り勘後の実質負担額を、やさしく見える化するシンプルな支出管理アプリ。" />
+    <meta name="twitter:image" content="https://nyanmodel.com/ai-tools/spendle/img/og-image.png" />
+    <meta name="twitter:image:alt" content="Nyanfoglio. — 支出をまとめて、わたしの負担を見える化。" />
     <link rel="icon" href="img/dna-solid-full.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
     <link rel="manifest" href="manifest.webmanifest" />
@@ -22,7 +44,7 @@
         <header class="app-header">
           <button id="back-button" class="icon-button hidden" type="button" aria-label="トップへ戻る">←</button>
           <div>
-            <h1 id="page-title" class="app-logo">Spendle.</h1>
+            <h1 id="page-title" class="app-logo">Nyanfoglio.</h1>
           </div>
           <button id="help-button" class="icon-button" type="button" aria-label="使い方"><i class="bi bi-question-circle" aria-hidden="true"></i></button>
           <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理"><i class="bi bi-gear" aria-hidden="true"></i></button>
@@ -40,12 +62,51 @@
         </section>
       </div>
 
-      <section id="home-view">
-        <div class="section-heading">
-          <h2>BOOKS</h2>
-          <button id="add-category-button" class="text-button" type="button">＋ 作成</button>
+      <section id="home-view" aria-label="ホーム">
+        <div id="home-pages" class="home-pages">
+          <section class="home-page" aria-labelledby="books-heading">
+            <div class="home-page-content">
+              <div class="section-heading">
+                <h2 id="books-heading">BOOKS</h2>
+                <div class="section-heading-actions">
+                  <button id="show-chart-button" class="text-button text-button--subtle" type="button" aria-label="グラフページを表示">グラフ <i class="bi bi-chevron-right" aria-hidden="true"></i></button>
+                  <button id="add-category-button" class="text-button" type="button">＋ 作成</button>
+                </div>
+              </div>
+              <div id="category-list" class="category-grid" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <section class="home-page chart-page" aria-labelledby="chart-heading">
+            <div class="home-page-content">
+              <div class="section-heading chart-heading">
+                <div>
+                  <p class="section-kicker">YOUR SPENDING</p>
+                  <h2 id="chart-heading">GRAPH</h2>
+                </div>
+                <div class="period-switch" role="group" aria-label="集計期間">
+                  <button class="period-button selected" type="button" data-chart-period="week" aria-pressed="true">週</button>
+                  <button class="period-button" type="button" data-chart-period="month" aria-pressed="false">月</button>
+                </div>
+              </div>
+              <section class="spending-card" aria-labelledby="chart-summary-label">
+                <div class="spending-summary">
+                  <div>
+                    <p id="chart-summary-label" class="summary-label">直近7日</p>
+                    <p id="chart-total" class="chart-total">¥0</p>
+                  </div>
+                  <p id="chart-range" class="chart-range"></p>
+                </div>
+                <div id="spending-chart" class="bar-chart" role="img" aria-label="直近7日の支出棒グラフ"></div>
+                <p id="chart-empty" class="chart-empty hidden">この期間の支出はまだありません</p>
+              </section>
+            </div>
+          </section>
         </div>
-        <div id="category-list" class="category-grid" aria-live="polite"></div>
+        <div class="page-indicator" role="group" aria-label="ホームページ">
+          <button class="page-dot selected" type="button" data-home-page="0" aria-label="BOOKSページ" aria-pressed="true"></button>
+          <button class="page-dot" type="button" data-home-page="1" aria-label="グラフページ" aria-pressed="false"></button>
+        </div>
       </section>
 
       <section id="category-view" class="hidden" aria-live="polite">
@@ -71,11 +132,10 @@
         <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
         <input id="expense-id" type="hidden" />
         <div class="ocr-trigger">
-          <button id="ocr-scan-button" class="secondary-button" type="button"><i class="bi bi-camera" aria-hidden="true"></i>撮影して読み取る</button>
-          <button id="ocr-library-button" class="secondary-button" type="button"><i class="bi bi-images" aria-hidden="true"></i>ライブラリから選ぶ</button>
-          <input id="ocr-library-input" class="hidden" type="file" accept="image/*" />
+          <button id="ocr-image-button" class="secondary-button" type="button"><i class="bi bi-receipt" aria-hidden="true"></i>レシートを読み取る</button>
+          <input id="ocr-image-input" class="hidden" type="file" accept="image/*" />
+          <p class="ocr-source-note">撮影またはライブラリから選択</p>
           <div id="ocr-candidates" class="ocr-candidates hidden" aria-label="読み取った金額候補"></div>
-          <input id="ocr-file-input" class="hidden" type="file" accept="image/*" capture="environment" />
           <p id="ocr-status" class="ocr-status hidden" role="status"></p>
         </div>
         <label>支出名<input id="expense-name" name="name" type="text" autocomplete="off" required maxlength="80" placeholder="例：ラーメン" /></label>
@@ -124,6 +184,7 @@
         <p><strong>TOTAL</strong> は、登録済みのすべての支出を割り勘後の金額で集計した、あなたの実質負担額です。</p>
         <p>右のドーナツグラフは、すべての小冊子に設定した予算の合計に対して、実質負担額がどれくらいの割合かを表します。予算を設定していない場合は「—」と表示されます。</p>
         <p>各小冊子の画面でも同じように、その小冊子の予算に対する実質負担額の割合をドーナツグラフで確認できます。</p>
+        <p>BOOKSを左へスワイプすると、実質負担額の推移を確認できます。「週」は直近7日の日別、「月」は直近6か月の月別グラフです。</p>
         <p>支出登録画面では、撮影またはライブラリの写真から日本語の合計・支払額を優先して読み取ります。小計などの候補はタップして選べます。初回は読み取り用データのダウンロードが必要です。読み取り精度は完璧ではないため、金額は必ず確認・修正してください。</p>
       </div>
     </dialog>

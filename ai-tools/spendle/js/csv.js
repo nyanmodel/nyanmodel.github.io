@@ -8,7 +8,7 @@ export function exportExpensesAsCsv(expenses, categories) {
   const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
   const link = document.createElement("a");
   link.href = url;
-  link.download = `Spendleバックアップ_${new Date().toISOString().slice(0, 10)}.csv`;
+  link.download = `Nyanfoglioバックアップ_${new Date().toISOString().slice(0, 10)}.csv`;
   document.body.append(link);
   link.click();
   link.remove();

@@ -1,4 +1,4 @@
-const CACHE_NAME = "spendle-v4";
+const CACHE_NAME = "nyanfoglio-v7";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const APP_SHELL = [
   "./js/app.js",
   "./js/storage.js",
   "./js/categories.js",
+  "./js/charts.js",
   "./js/expenses.js",
   "./js/csv.js",
   "./js/ocr.js",
