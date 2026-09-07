@@ -1233,6 +1233,16 @@ h2 {
   color: var(--ink);
 }
 
+@media (max-width: 599px) {
+  .app-shell--home .app-hero {
+    margin-bottom: 0;
+  }
+
+  .app-shell--home #home-view > .section-heading {
+    margin-top: 18px;
+  }
+}
+
 @media (min-width: 600px) {
   .app-shell {
     padding-top: calc(32px + env(safe-area-inset-top));
