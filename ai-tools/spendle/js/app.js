@@ -1,5 +1,5 @@
 import { calculateCategoryBurden, calculatePersonalBurden, calculateTotalBudget, createCategory, getCategoryById } from "./categories.js";
-import { createSpendingSeries } from "./charts.js";
+import { createSpendingSeries, createChartScale } from "./charts.js";
 import { exportExpensesAsCsv, parseExpensesCsv } from "./csv.js";
 import { createExpense, sortExpensesByDate, validateExpense } from "./expenses.js";
 import { recognizeReceiptAmount } from "./ocr.js";
@@ -18,7 +18,7 @@ let data = migrateLegacyEmojiIcons(loadData());
 let selectedCategoryId = null;
 let selectedIcon = icons[0];
 let ocrRequestId = 0;
-let chartPeriod = "week";
+let chartPeriod = "day";
 let homePage = 0;
 
 const elements = {
@@ -95,22 +95,35 @@ function renderSpendingChart() {
   const series = createSpendingSeries(data.expenses, chartPeriod, today());
   const total = series.points.reduce((sum, point) => sum + point.amount, 0);
   const maximum = Math.max(...series.points.map((point) => point.amount), 0);
+  const scale = createChartScale(maximum);
   elements.chartSummaryLabel.textContent = series.title;
   elements.chartTotal.textContent = formatYen(total);
   elements.chartRange.textContent = series.range;
+  document.querySelector("#chart-note").textContent = series.note;
   elements.spendingChart.dataset.period = chartPeriod;
-  elements.spendingChart.setAttribute("aria-label", `${series.title}の実質負担額。合計${formatYen(total)}`);
+  elements.spendingChart.setAttribute("aria-label", `${series.title}の実質負担額。合計${formatYen(total)}。${series.points.map(point => `${point.detail}: ${formatYen(point.amount)}`).join("、")}`);
   elements.spendingChart.replaceChildren();
+  const grid = document.createElement("div"); grid.className = "chart-grid"; grid.setAttribute("aria-hidden", "true");
+  scale.ticks.forEach(value => {
+    const line = document.createElement("div"); line.className = "chart-grid-line";
+    line.style.bottom = `${value / scale.maximum * 100}%`;
+    const tick = document.createElement("span"); tick.textContent = value ? formatCompactYen(value) : "¥0";
+    line.append(tick); grid.append(line);
+  });
+  elements.spendingChart.append(grid);
   series.points.forEach((point) => {
     const column = document.createElement("div"); column.className = `bar-column${point.current ? " current" : ""}`;
+    column.title = `${point.detail}：${formatYen(point.amount)}`;
     const amount = document.createElement("span"); amount.className = "bar-amount"; amount.textContent = formatCompactYen(point.amount); amount.title = formatYen(point.amount);
     const track = document.createElement("span"); track.className = "bar-track";
     const bar = document.createElement("span"); bar.className = "bar";
-    const height = maximum && point.amount ? Math.max((point.amount / maximum) * 100, 5) : 0;
-    bar.style.height = `${height}%`; track.append(bar);
+    const height = point.amount / scale.maximum * 100;
+    bar.style.height = `${height}%`;
+    amount.style.bottom = `calc(${height}% + 5px)`;
+    track.append(bar, amount);
     const label = document.createElement("span"); label.className = "bar-label"; label.textContent = point.label;
-    const accessible = document.createElement("span"); accessible.className = "visually-hidden"; accessible.textContent = `${point.label} ${formatYen(point.amount)}`;
-    column.append(amount, track, label, accessible); elements.spendingChart.append(column);
+    const accessible = document.createElement("span"); accessible.className = "visually-hidden"; accessible.textContent = `${point.detail} ${formatYen(point.amount)}`;
+    column.append(track, label, accessible); elements.spendingChart.append(column);
   });
   elements.chartEmpty.classList.toggle("hidden", total > 0);
 }
