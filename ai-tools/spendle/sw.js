@@ -1,4 +1,4 @@
-const CACHE_NAME = "nyanfoglio-v7";
+const CACHE_NAME = "nyanfoglio-v8";
 const APP_SHELL = [
   "./",
   "./index.html",
