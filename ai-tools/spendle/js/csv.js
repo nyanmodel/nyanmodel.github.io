@@ -1,6 +1,6 @@
 import { calculatePersonalBurden } from "./categories.js";
 
-const BACKUP_HEADER = ["データ種別", "レコードID", "小冊子ID", "小冊子名", "アイコン", "予算", "表示順", "日付", "支出名", "合計金額", "割り勘人数", "自分の負担額", "作成日時"];
+const BACKUP_HEADER = ["データ種別", "レコードID", "小冊子ID", "小冊子名", "アイコン", "予算", "表示順", "日付", "支出名", "合計金額", "割り勘人数", "自分の負担額", "作成日時", "更新日時"];
 const LEGACY_HEADER = ["日付", "カテゴリ", "支出名", "合計金額", "割り勘人数", "自分の負担額"];
 
 export function exportExpensesAsCsv(expenses, categories) {
@@ -21,11 +21,11 @@ export function createBackupCsv(expenses, categories) {
   [...categories]
     .sort((first, second) => first.order - second.order)
     .forEach((category) => rows.push([
-      "小冊子", category.id, category.id, category.name, category.icon, category.budget ?? 0, category.order, "", "", "", "", "", category.createdAt || "",
+      "小冊子", category.id, category.id, category.name, category.icon, category.budget ?? 0, category.order, "", "", "", "", "", category.createdAt || "", category.updatedAt || "",
     ]));
   expenses.forEach((expense) => rows.push([
     "支出", expense.id, expense.categoryId, categoryNames.get(expense.categoryId) || "削除済み小冊子", "", "", "", expense.date, expense.name, expense.amount, expense.people,
-    calculatePersonalBurden(expense.amount, expense.people), expense.createdAt || "",
+    calculatePersonalBurden(expense.amount, expense.people), expense.createdAt || "", "",
   ]));
   return "\uFEFF" + rows.map((row) => row.map(escapeCsvValue).join(",")).join("\r\n");
 }
@@ -68,7 +68,7 @@ function parseBackupRows(dataRows, header) {
         return;
       }
       categoryIds.add(categoryId);
-      categories.push({ id, name, icon, budget, order, createdAt });
+      categories.push({ id, name, icon, budget, order, createdAt, updatedAt: value("更新日時") });
       return;
     }
     if (type === "支出") {
