@@ -23,3 +23,25 @@ export function createCategory(name, icon, order, budget) {
 function createId() {
   return crypto.randomUUID();
 }
+
+// Older records use the latest available creation timestamp until first edited.
+export function sortCategories(categories, expenses, sort = "updated") {
+  const timestamp = (value) => Date.parse(value) || 0;
+  const latest = new Map(categories.map((category) => [category.id,
+    Math.max(timestamp(category.updatedAt), timestamp(category.createdAt))]));
+  expenses.forEach((expense) => latest.set(expense.categoryId, Math.max(
+    latest.get(expense.categoryId) || 0, timestamp(expense.updatedAt), timestamp(expense.createdAt))));
+  const names = new Intl.Collator("ja", { numeric: true, sensitivity: "base" });
+  return [...categories].sort((a, b) => {
+    const fallback = (a.order - b.order) || a.id.localeCompare(b.id);
+    if (sort === "name") return names.compare(a.name, b.name) || fallback;
+    if (sort === "created") return fallback;
+    return (latest.get(b.id) - latest.get(a.id)) || fallback;
+  });
+}
+
+export function touchCategories(categories, ids, updatedAt = new Date().toISOString()) {
+  categories.forEach((category) => {
+    if (ids.includes(category.id)) category.updatedAt = updatedAt;
+  });
+}

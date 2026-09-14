@@ -5,7 +5,7 @@ import vm from 'node:vm';
 const readModule = name => readFile(new URL(`../js/${name}.js`, import.meta.url), 'utf8');
 const moduleUrl = source => `data:text/javascript;base64,${Buffer.from(source).toString('base64')}`;
 const categoriesUrl = moduleUrl(await readModule('categories'));
-const { createCategory } = await import(categoriesUrl);
+const { createCategory, touchCategories } = await import(categoriesUrl);
 const { createExpense } = await import(moduleUrl(
   (await readModule('expenses')).replace('"./categories.js"', JSON.stringify(categoriesUrl))
 ));
@@ -17,17 +17,18 @@ const app = await readModule('app');
 const handler = app.slice(app.indexOf('function importExpensesFromCsv('), app.indexOf('function deleteCurrentCategory('));
 const context = vm.createContext({
   data: { categories: [], expenses: [] },
-  parseExpensesCsv, createCategory, createExpense,
+  parseExpensesCsv, createCategory, createExpense, touchCategories,
   icons: ['bi-cart'], persistAndRender() {},
   window: { confirm: () => true, alert() {} },
 });
 vm.runInContext(handler, context);
-const categories = [{ id: 'c1', name: '食費', icon: 'bi-cart', budget: 3000, order: 0 }];
+const categories = [{ id: 'c1', name: '食費', icon: 'bi-cart', budget: 3000, order: 0, updatedAt: '2026-09-08T01:00:00.000Z' }];
 const expenses = ['e1', 'e2'].map(id => ({
   id, categoryId: 'c1', date: '2026-09-07', name: 'コーヒー', amount: 300, people: 1,
 }));
 const backup = createBackupCsv(expenses, categories);
 context.importExpensesFromCsv(backup, 'replace');
+assert.equal(context.data.categories[0].updatedAt, categories[0].updatedAt);
 assert.equal(context.data.expenses.length, 2, 'Replace must preserve distinct IDs with identical content');
 assert.equal(context.data.expenses.map(row => row.id).join(','), 'e1,e2');
 context.importExpensesFromCsv(backup, 'append');

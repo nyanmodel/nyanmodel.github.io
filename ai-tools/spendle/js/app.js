@@ -1,4 +1,4 @@
-import { calculateCategoryBurden, calculatePersonalBurden, calculateTotalBudget, createCategory, getCategoryById } from "./categories.js";
+import { sortCategories, touchCategories, calculateCategoryBurden, calculatePersonalBurden, calculateTotalBudget, createCategory, getCategoryById } from "./categories.js";
 import { createSpendingSeries, createChartScale } from "./charts.js";
 import { exportExpensesAsCsv, parseExpensesCsv } from "./csv.js";
 import { createExpense, sortExpensesByDate, validateExpense } from "./expenses.js";
@@ -22,9 +22,10 @@ let chartPeriod = "day";
 let homePage = 0;
 
 const elements = {
+  categorySort: document.querySelector("#category-sort"),
   ambientBackground: document.querySelector("#ambient-background"), ambientGradient: document.querySelector("#ambient-gradient"), appShell: document.querySelector(".app-shell"), dashboardBand: document.querySelector("#dashboard-band"),
   backButton: document.querySelector("#back-button"), pageTitle: document.querySelector("#page-title"), helpButton: document.querySelector("#help-button"), settingsButton: document.querySelector("#settings-button"),
-  homeView: document.querySelector("#home-view"), homePages: document.querySelector("#home-pages"), homePagePanels: [...document.querySelectorAll(".home-page")], homePageContents: [...document.querySelectorAll(".home-page-content")], showChartButton: document.querySelector("#show-chart-button"), categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
+  homeView: document.querySelector("#home-view"), homePages: document.querySelector("#home-pages"), homePagePanels: [...document.querySelectorAll(".home-page")], homePageContents: [...document.querySelectorAll(".home-page-content")], categoryView: document.querySelector("#category-view"), totalBurden: document.querySelector("#total-burden"), totalBudgetNote: document.querySelector("#total-budget-note"), totalBudget: document.querySelector("#total-budget"), budgetPercentage: document.querySelector("#budget-percentage"), budgetDonutChart: document.querySelector("#budget-donut-chart"), categoryList: document.querySelector("#category-list"),
   chartSummaryLabel: document.querySelector("#chart-summary-label"), chartTotal: document.querySelector("#chart-total"), chartRange: document.querySelector("#chart-range"), spendingChart: document.querySelector("#spending-chart"), chartEmpty: document.querySelector("#chart-empty"), chartPeriodButtons: [...document.querySelectorAll("[data-chart-period]")], homePageButtons: [...document.querySelectorAll("[data-home-page]")],
   addCategoryButton: document.querySelector("#add-category-button"), addExpenseButton: document.querySelector("#add-expense-button"), detailCategoryIcon: document.querySelector("#detail-category-icon"), categoryBurden: document.querySelector("#category-burden"), categoryCount: document.querySelector("#category-count"), categoryDonutWrap: document.querySelector("#category-donut-wrap"), categoryDonutChart: document.querySelector("#category-donut-chart"), categoryPercentage: document.querySelector("#category-percentage"), expenseList: document.querySelector("#expense-list"), editCategoryButton: document.querySelector("#edit-category-button"),
   expenseDialog: document.querySelector("#expense-dialog"), expenseForm: document.querySelector("#expense-form"), expenseDialogTitle: document.querySelector("#expense-dialog-title"), expenseId: document.querySelector("#expense-id"), expenseName: document.querySelector("#expense-name"), expenseAmount: document.querySelector("#expense-amount"), expensePeople: document.querySelector("#expense-people"), expenseCategory: document.querySelector("#expense-category"), expenseDate: document.querySelector("#expense-date"), expenseError: document.querySelector("#expense-form-error"), burdenPreviewValue: document.querySelector("#burden-preview-value"), burdenPreviewNote: document.querySelector("#burden-preview-note"),
@@ -185,7 +186,8 @@ function handleHomePageScroll() {
 
 function renderCategories() {
   elements.categoryList.replaceChildren();
-  const categories = [...data.categories].sort((first, second) => first.order - second.order);
+  elements.categorySort.value = ["updated", "name", "created"].includes(data.categorySort) ? data.categorySort : "updated";
+  const categories = sortCategories(data.categories, data.expenses, elements.categorySort.value);
   if (!categories.length) { elements.categoryList.append(elements.emptyCategories.content.cloneNode(true)); return; }
   categories.forEach((category) => {
     const card = document.createElement("button"); card.type = "button"; card.className = "category-card"; card.setAttribute("aria-label", `${category.name}を開く`);
@@ -330,6 +332,8 @@ function saveExpense(event) {
   event.preventDefault();
   const values = { name: elements.expenseName.value.trim(), amount: Number(elements.expenseAmount.value), people: Number(elements.expensePeople.value), categoryId: elements.expenseCategory.value, date: elements.expenseDate.value };
   const error = validateExpense(values, data.categories); elements.expenseError.textContent = error; if (error) return;
+  const previousCategoryId = data.expenses.find((expense) => expense.id === elements.expenseId.value)?.categoryId;
+  touchCategories(data.categories, [previousCategoryId, values.categoryId]);
   if (elements.expenseId.value) { const index = data.expenses.findIndex((expense) => expense.id === elements.expenseId.value); data.expenses[index] = { ...data.expenses[index], ...values }; }
   else data.expenses.push(createExpense(values));
   elements.expenseDialog.close(); persistAndRender();
@@ -337,6 +341,7 @@ function saveExpense(event) {
 
 function deleteExpense(expenseId) {
   if (!window.confirm("この支出を削除しますか？")) return;
+  touchCategories(data.categories, [data.expenses.find((expense) => expense.id === expenseId)?.categoryId]);
   data.expenses = data.expenses.filter((expense) => expense.id !== expenseId); persistAndRender();
 }
 
@@ -388,7 +393,7 @@ function saveCategory(event) {
   if (!name) { elements.categoryError.textContent = "小冊子名を入力してください。"; return; }
   if (!Number.isInteger(budget) || budget < 0) { elements.categoryError.textContent = "予算は0円以上の整数で入力してください。"; return; }
   const id = elements.categoryId.value;
-  if (id) { const category = getCategoryById(data.categories, id); Object.assign(category, { name, icon: selectedIcon, budget }); }
+  if (id) { const category = getCategoryById(data.categories, id); Object.assign(category, { name, icon: selectedIcon, budget, updatedAt: new Date().toISOString() }); }
   else data.categories.push(createCategory(name, selectedIcon, data.categories.length, budget));
   elements.categoryDialog.close(); persistAndRender();
 }
@@ -417,7 +422,7 @@ function importExpensesFromCsv(text, mode) {
     if (existing) { categoryIdMap.set(importedCategory.id, existing.id); return; }
     const order = mode === "append" ? data.categories.length : importedCategory.order;
     const category = createCategory(importedCategory.name, importedCategory.icon, order, importedCategory.budget);
-    Object.assign(category, { id: importedCategory.id, createdAt: importedCategory.createdAt || category.createdAt });
+    Object.assign(category, { id: importedCategory.id, createdAt: importedCategory.createdAt || category.createdAt, updatedAt: importedCategory.updatedAt || "" });
     data.categories.push(category);
     categoryIdMap.set(importedCategory.id, category.id);
     importedCategories++;
@@ -436,6 +441,7 @@ function importExpensesFromCsv(text, mode) {
     const expense = createExpense({ name: row.name, amount: row.amount, people: row.people, categoryId, date: row.date });
     if (row.id) Object.assign(expense, { id: row.id, createdAt: row.createdAt || expense.createdAt });
     data.expenses.push(expense);
+    if (mode === "append") touchCategories(data.categories, [categoryId]);
     imported++;
   });
   persistAndRender();
@@ -458,7 +464,7 @@ elements.addCategoryButton.addEventListener("click", () => openCategoryDialog())
 elements.expenseAmount.addEventListener("input", updateBurdenPreview); elements.expensePeople.addEventListener("input", updateBurdenPreview); elements.expenseForm.addEventListener("submit", saveExpense); elements.categoryForm.addEventListener("submit", saveCategory); elements.deleteCategoryButton.addEventListener("click", deleteCurrentCategory); elements.exportCsvButton.addEventListener("click", () => exportExpensesAsCsv(sortExpensesByDate(data.expenses), data.categories));
 elements.ocrImageButton.addEventListener("click", () => elements.ocrImageInput.click()); elements.ocrImageInput.addEventListener("change", handleReceiptScan);
 elements.importCsvButton.addEventListener("click", () => elements.importCsvInput.click()); elements.importCsvInput.addEventListener("change", handleCsvFileSelected);
-elements.showChartButton.addEventListener("click", () => showHomePage(1));
+elements.categorySort.addEventListener("change", () => { data.categorySort = elements.categorySort.value; persistAndRender(); });
 elements.homePageButtons.forEach((button) => button.addEventListener("click", () => showHomePage(Number(button.dataset.homePage))));
 elements.chartPeriodButtons.forEach((button) => button.addEventListener("click", () => setChartPeriod(button.dataset.chartPeriod)));
 elements.homePages.addEventListener("scroll", handleHomePageScroll, { passive: true });
