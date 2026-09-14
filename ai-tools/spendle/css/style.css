@@ -1255,7 +1255,8 @@ h2 {
 
 }
 
-.category-sort-control {
+.category-sort-control,
+.book-create-button {
   position: relative;
   display: inline-flex;
   align-items: center;
@@ -1287,11 +1288,31 @@ h2 {
 }
 .category-sort-icon { left: 12px; font-size: 0.9rem; opacity: 0.7; }
 .category-sort-chevron { right: 12px; font-size: 0.65rem; opacity: 0.65; }
-.category-sort:focus-visible {
+.category-sort:focus-visible,
+.book-create-button:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
 }
 .category-sort option { color: #004ca0; background: #f4f8fc; }
 @media (hover: hover) {
-  .category-sort-control:hover { background-color: rgba(255, 255, 255, 0.4); }
+  .category-sort-control:hover,
+  .book-create-button:hover { background-color: rgba(255, 255, 255, 0.4); }
+}
+
+
+.books-heading-group {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.book-create-button {
+  justify-content: center;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  cursor: pointer;
+}
+.book-create-button:active {
+  background-color: rgba(255, 255, 255, 0.6);
 }
