@@ -92,6 +92,45 @@ function render() {
   if (selectedCategoryId) renderCategoryDetail();
 }
 
+function openBreakdownDialog() {
+  const entries = data.categories.map((category, index) => ({
+    name: category.name,
+    amount: calculateCategoryBurden(data.expenses, category.id),
+    color: `hsl(${(214 + index * 137.508) % 360} 65% 46%)`
+  })).sort((a, b) => b.amount - a.amount);
+  const total = entries.reduce((sum, entry) => sum + entry.amount, 0);
+  const legend = document.querySelector("#breakdown-legend");
+  legend.replaceChildren();
+  let position = 0;
+  const stops = [];
+  entries.forEach((entry) => {
+    const share = total > 0 ? entry.amount / total * 100 : 0;
+    if (share > 0) {
+      stops.push(`${entry.color} ${position}% ${position + share}%`);
+      position += share;
+    }
+    const row = document.createElement("li");
+    const swatch = document.createElement("span");
+    swatch.className = "breakdown-swatch";
+    swatch.style.background = entry.color;
+    swatch.setAttribute("aria-hidden", "true");
+    const name = document.createElement("span");
+    name.className = "breakdown-name";
+    name.textContent = entry.name;
+    const value = document.createElement("span");
+    value.className = "breakdown-value";
+    const percent = share > 0 && share < 0.1 ? "0.1%未満" : `${Number(share.toFixed(1))}%`;
+    value.textContent = `${formatYen(entry.amount)} · ${percent}`;
+    row.append(swatch, name, value);
+    legend.append(row);
+  });
+  document.querySelector("#breakdown-ring").style.background = stops.length
+    ? `conic-gradient(${stops.join(", ")})` : "rgba(0, 76, 160, 0.12)";
+  document.querySelector("#breakdown-total").textContent = formatYen(total);
+  document.querySelector("#breakdown-empty").classList.toggle("hidden", total > 0);
+  document.querySelector("#breakdown-dialog").showModal();
+}
+
 function renderSpendingChart() {
   const series = createSpendingSeries(data.expenses, chartPeriod, today());
   const total = series.points.reduce((sum, point) => sum + point.amount, 0);
@@ -358,6 +397,8 @@ function drawDonut(canvas, percentageEl, burden, budget, options = {}) {
   const { radius = 52, lineWidth = 15, trackColor = "#d8e5ee", progressColor = "#004CA0", overBudgetColor = "#c0364b" } = options;
   const percentage = budget ? Math.round((burden / budget) * 100) : null;
   percentageEl.textContent = percentage === null ? "—" : `${percentage}%`;
+  const activeColor = budget && burden > budget ? overBudgetColor : progressColor;
+  percentageEl.style.color = activeColor;
   const context = canvas.getContext("2d");
   const size = canvas.width; const center = size / 2;
   context.clearRect(0, 0, size, size);
@@ -365,7 +406,7 @@ function drawDonut(canvas, percentageEl, burden, budget, options = {}) {
   context.strokeStyle = trackColor; context.beginPath(); context.arc(center, center, radius, 0, Math.PI * 2); context.stroke();
   if (!budget) return;
   const usedRatio = Math.min(burden / budget, 1);
-  context.strokeStyle = burden > budget ? overBudgetColor : progressColor;
+  context.strokeStyle = activeColor;
   context.beginPath(); context.arc(center, center, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * usedRatio)); context.stroke();
 }
 
@@ -458,6 +499,8 @@ function deleteCurrentCategory() {
   if (!window.confirm(message)) return;
   data.categories = data.categories.filter((category) => category.id !== categoryId); data.expenses = data.expenses.filter((expense) => expense.categoryId !== categoryId); elements.categoryDialog.close(); returnHome(); persistAndRender();
 }
+
+document.querySelector("#open-breakdown-button").addEventListener("click", openBreakdownDialog);
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => document.querySelector(`#${button.dataset.closeDialog}`).close()));
 elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.helpButton.addEventListener("click", () => elements.helpDialog.showModal()); elements.settingsButton.addEventListener("click", () => elements.settingsDialog.showModal());

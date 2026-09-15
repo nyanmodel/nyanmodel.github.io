@@ -57,7 +57,7 @@
               <p id="total-burden" class="dashboard-band-amount">¥0</p>
               <p id="total-budget-note" class="dashboard-band-budget hidden">/ <span id="total-budget">¥0</span></p>
             </div>
-            <div class="donut-chart-wrap donut-chart-wrap--inverted"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></div>
+            <button id="open-breakdown-button" class="donut-chart-wrap donut-chart-wrap--inverted donut-chart-button" type="button" aria-label="小冊子ごとの金額の内訳を拡大表示" aria-haspopup="dialog" aria-controls="breakdown-dialog" title="タッチして内訳を見る"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></button>
           </div>
         </section>
       </div>
@@ -140,6 +140,17 @@
     </main>
 
     <button id="add-expense-button" class="primary-fab" type="button" aria-label="支出を登録"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></button>
+
+    <dialog id="breakdown-dialog" class="app-dialog" aria-labelledby="breakdown-title" aria-describedby="breakdown-description">
+      <div class="dialog-header"><h2 id="breakdown-title">小冊子ごとの内訳</h2><button class="icon-button" type="button" data-close-dialog="breakdown-dialog" aria-label="閉じる" autofocus>×</button></div>
+      <p id="breakdown-description" class="breakdown-description">全期間の実質負担額（割り勘後）</p>
+      <div class="breakdown-chart">
+        <div id="breakdown-ring" class="breakdown-ring" aria-hidden="true"></div>
+        <div class="breakdown-center"><span>合計</span><strong id="breakdown-total">¥0</strong></div>
+      </div>
+      <p id="breakdown-empty" class="breakdown-description hidden">支出はまだありません。支出を登録すると内訳が表示されます。</p>
+      <ul id="breakdown-legend" class="breakdown-legend" aria-label="小冊子ごとの金額と割合"></ul>
+    </dialog>
 
     <dialog id="expense-dialog" class="app-dialog">
       <form id="expense-form" novalidate>

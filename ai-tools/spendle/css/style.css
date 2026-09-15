@@ -1349,3 +1349,65 @@ h2 {
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+/* Expanded spending breakdown */
+.donut-chart-button {
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+.donut-chart-button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 4px;
+}
+.donut-chart-button:active { transform: scale(0.96); }
+.breakdown-description {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.breakdown-chart {
+  position: relative;
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  margin: 24px auto;
+}
+.breakdown-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  mask: radial-gradient(transparent 0 51%, #000 51.5%);
+  -webkit-mask: radial-gradient(transparent 0 51%, #000 51.5%);
+}
+.breakdown-center {
+  position: absolute;
+  inset: 24%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+.breakdown-center span { font-size: 0.8rem; }
+.breakdown-center strong { font-size: clamp(1rem, 5vw, 1.6rem); }
+.breakdown-legend { list-style: none; padding: 0; margin: 0; }
+.breakdown-legend li {
+  display: grid;
+  grid-template-columns: 10px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(0, 76, 160, 0.1);
+  font-size: 0.85rem;
+}
+.breakdown-swatch { width: 10px; height: 10px; border-radius: 50%; }
+.breakdown-name { overflow-wrap: anywhere; }
+.breakdown-value { font-variant-numeric: tabular-nums; text-align: right; }
+@media (max-width: 360px) {
+  .breakdown-legend li { grid-template-columns: 10px minmax(0, 1fr); }
+  .breakdown-value { grid-column: 2; text-align: left; }
+}
