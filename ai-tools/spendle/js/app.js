@@ -19,6 +19,7 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 let ocrRequestId = 0;
 let chartPeriod = "day";
+let selectedChartKey = null;
 let homePage = 0;
 
 const elements = {
@@ -92,6 +93,45 @@ function render() {
   if (selectedCategoryId) renderCategoryDetail();
 }
 
+function openBreakdownDialog() {
+  const entries = data.categories.map((category, index) => ({
+    name: category.name,
+    amount: calculateCategoryBurden(data.expenses, category.id),
+    color: `hsl(${(214 + index * 137.508) % 360} 65% 46%)`
+  })).sort((a, b) => b.amount - a.amount);
+  const total = entries.reduce((sum, entry) => sum + entry.amount, 0);
+  const legend = document.querySelector("#breakdown-legend");
+  legend.replaceChildren();
+  let position = 0;
+  const stops = [];
+  entries.forEach((entry) => {
+    const share = total > 0 ? entry.amount / total * 100 : 0;
+    if (share > 0) {
+      stops.push(`${entry.color} ${position}% ${position + share}%`);
+      position += share;
+    }
+    const row = document.createElement("li");
+    const swatch = document.createElement("span");
+    swatch.className = "breakdown-swatch";
+    swatch.style.background = entry.color;
+    swatch.setAttribute("aria-hidden", "true");
+    const name = document.createElement("span");
+    name.className = "breakdown-name";
+    name.textContent = entry.name;
+    const value = document.createElement("span");
+    value.className = "breakdown-value";
+    const percent = share > 0 && share < 0.1 ? "0.1%未満" : `${Number(share.toFixed(1))}%`;
+    value.textContent = `${formatYen(entry.amount)} · ${percent}`;
+    row.append(swatch, name, value);
+    legend.append(row);
+  });
+  document.querySelector("#breakdown-ring").style.background = stops.length
+    ? `conic-gradient(${stops.join(", ")})` : "rgba(0, 76, 160, 0.12)";
+  document.querySelector("#breakdown-total").textContent = formatYen(total);
+  document.querySelector("#breakdown-empty").classList.toggle("hidden", total > 0);
+  document.querySelector("#breakdown-dialog").showModal();
+}
+
 function renderSpendingChart() {
   const series = createSpendingSeries(data.expenses, chartPeriod, today());
   const total = series.points.reduce((sum, point) => sum + point.amount, 0);
@@ -100,7 +140,6 @@ function renderSpendingChart() {
   elements.chartSummaryLabel.textContent = series.title;
   elements.chartTotal.textContent = formatYen(total);
   elements.chartRange.textContent = series.range;
-  document.querySelector("#chart-note").textContent = series.note;
   elements.spendingChart.dataset.period = chartPeriod;
   elements.spendingChart.setAttribute("aria-label", `${series.title}の実質負担額。合計${formatYen(total)}。${series.points.map(point => `${point.detail}: ${formatYen(point.amount)}`).join("、")}`);
   elements.spendingChart.replaceChildren();
@@ -113,7 +152,14 @@ function renderSpendingChart() {
   });
   elements.spendingChart.append(grid);
   series.points.forEach((point) => {
-    const column = document.createElement("div"); column.className = `bar-column${point.current ? " current" : ""}`;
+    const column = document.createElement("button"); column.type = "button"; column.className = `bar-column${point.current ? " current" : ""}`;
+    column.dataset.chartKey = point.key;
+    column.setAttribute("aria-controls", "chart-details");
+    column.setAttribute("aria-label", `${point.detail}、${formatYen(point.amount)}の支出一覧を表示`);
+    column.addEventListener("click", () => {
+      selectedChartKey = point.key;
+      renderChartDetails(point);
+    });
     column.title = `${point.detail}：${formatYen(point.amount)}`;
     const amount = document.createElement("span"); amount.className = "bar-amount"; amount.textContent = formatCompactYen(point.amount); amount.title = formatYen(point.amount);
     const track = document.createElement("span"); track.className = "bar-track";
@@ -127,6 +173,32 @@ function renderSpendingChart() {
     column.append(track, label, accessible); elements.spendingChart.append(column);
   });
   elements.chartEmpty.classList.toggle("hidden", total > 0);
+  renderChartDetails(series.points.find(point => point.key === selectedChartKey));
+}
+
+function renderChartDetails(point) {
+  document.querySelector("#chart-details").classList.toggle("hidden", !point);
+  elements.spendingChart.querySelectorAll(".bar-column").forEach(column => {
+    const selected = column.dataset.chartKey === point?.key;
+    column.classList.toggle("selected", selected);
+    column.setAttribute("aria-pressed", String(selected));
+  });
+  const rows = document.querySelector("#chart-details-rows");
+  rows.replaceChildren();
+  if (!point) return;
+  document.querySelector("#chart-details-heading").textContent = `${point.detail}の支出`;
+  document.querySelector("#chart-details-summary").textContent = `${point.expenses.length}件 · 合計 ${formatYen(point.amount)}（割り勘後）`;
+  document.querySelector("#chart-details-empty").classList.toggle("hidden", point.expenses.length > 0);
+  document.querySelector("#chart-details-table").classList.toggle("hidden", point.expenses.length === 0);
+  sortExpensesByDate(point.expenses).forEach(expense => {
+    const row = document.createElement("tr");
+    [expense.name, formatDate(expense.date), formatYen(calculatePersonalBurden(expense.amount, expense.people))].forEach(value => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    });
+    rows.append(row);
+  });
 }
 
 function formatCompactYen(amount) {
@@ -136,6 +208,7 @@ function formatCompactYen(amount) {
 }
 
 function setChartPeriod(period) {
+  if (chartPeriod !== period) selectedChartKey = null;
   chartPeriod = period;
   elements.chartPeriodButtons.forEach((button) => {
     const selected = button.dataset.chartPeriod === period;
@@ -358,6 +431,8 @@ function drawDonut(canvas, percentageEl, burden, budget, options = {}) {
   const { radius = 52, lineWidth = 15, trackColor = "#d8e5ee", progressColor = "#004CA0", overBudgetColor = "#c0364b" } = options;
   const percentage = budget ? Math.round((burden / budget) * 100) : null;
   percentageEl.textContent = percentage === null ? "—" : `${percentage}%`;
+  const activeColor = budget && burden > budget ? overBudgetColor : progressColor;
+  percentageEl.style.color = activeColor;
   const context = canvas.getContext("2d");
   const size = canvas.width; const center = size / 2;
   context.clearRect(0, 0, size, size);
@@ -365,7 +440,7 @@ function drawDonut(canvas, percentageEl, burden, budget, options = {}) {
   context.strokeStyle = trackColor; context.beginPath(); context.arc(center, center, radius, 0, Math.PI * 2); context.stroke();
   if (!budget) return;
   const usedRatio = Math.min(burden / budget, 1);
-  context.strokeStyle = burden > budget ? overBudgetColor : progressColor;
+  context.strokeStyle = activeColor;
   context.beginPath(); context.arc(center, center, radius, -Math.PI / 2, -Math.PI / 2 + (Math.PI * 2 * usedRatio)); context.stroke();
 }
 
@@ -458,6 +533,8 @@ function deleteCurrentCategory() {
   if (!window.confirm(message)) return;
   data.categories = data.categories.filter((category) => category.id !== categoryId); data.expenses = data.expenses.filter((expense) => expense.categoryId !== categoryId); elements.categoryDialog.close(); returnHome(); persistAndRender();
 }
+
+document.querySelector("#open-breakdown-button").addEventListener("click", openBreakdownDialog);
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => document.querySelector(`#${button.dataset.closeDialog}`).close()));
 elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.helpButton.addEventListener("click", () => elements.helpDialog.showModal()); elements.settingsButton.addEventListener("click", () => elements.settingsDialog.showModal());

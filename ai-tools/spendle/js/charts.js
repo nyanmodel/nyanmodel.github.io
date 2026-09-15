@@ -84,10 +84,16 @@ function createMonthlySeries(expenses, reference) {
 }
 
 function addExpenses(points, expenses, getKey) {
-  const pointByKey = new Map(points.map((point) => [point.key, point]));
+  const pointByKey = new Map(points.map((point) => {
+    point.expenses = [];
+    return [point.key, point];
+  }));
   expenses.forEach((expense) => {
     const point = pointByKey.get(getKey(expense));
-    if (point) point.amount += calculatePersonalBurden(expense.amount, expense.people);
+    if (point) {
+      point.amount += calculatePersonalBurden(expense.amount, expense.people);
+      point.expenses.push(expense);
+    }
   });
 }
 
