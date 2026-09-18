@@ -19,6 +19,7 @@ let selectedCategoryId = null;
 let selectedIcon = icons[0];
 let ocrRequestId = 0;
 let chartPeriod = "day";
+let selectedChartKey = null;
 let homePage = 0;
 
 const elements = {
@@ -139,7 +140,6 @@ function renderSpendingChart() {
   elements.chartSummaryLabel.textContent = series.title;
   elements.chartTotal.textContent = formatYen(total);
   elements.chartRange.textContent = series.range;
-  document.querySelector("#chart-note").textContent = series.note;
   elements.spendingChart.dataset.period = chartPeriod;
   elements.spendingChart.setAttribute("aria-label", `${series.title}の実質負担額。合計${formatYen(total)}。${series.points.map(point => `${point.detail}: ${formatYen(point.amount)}`).join("、")}`);
   elements.spendingChart.replaceChildren();
@@ -152,7 +152,14 @@ function renderSpendingChart() {
   });
   elements.spendingChart.append(grid);
   series.points.forEach((point) => {
-    const column = document.createElement("div"); column.className = `bar-column${point.current ? " current" : ""}`;
+    const column = document.createElement("button"); column.type = "button"; column.className = `bar-column${point.current ? " current" : ""}`;
+    column.dataset.chartKey = point.key;
+    column.setAttribute("aria-controls", "chart-details");
+    column.setAttribute("aria-label", `${point.detail}、${formatYen(point.amount)}の支出一覧を表示`);
+    column.addEventListener("click", () => {
+      selectedChartKey = point.key;
+      renderChartDetails(point);
+    });
     column.title = `${point.detail}：${formatYen(point.amount)}`;
     const amount = document.createElement("span"); amount.className = "bar-amount"; amount.textContent = formatCompactYen(point.amount); amount.title = formatYen(point.amount);
     const track = document.createElement("span"); track.className = "bar-track";
@@ -166,6 +173,32 @@ function renderSpendingChart() {
     column.append(track, label, accessible); elements.spendingChart.append(column);
   });
   elements.chartEmpty.classList.toggle("hidden", total > 0);
+  renderChartDetails(series.points.find(point => point.key === selectedChartKey));
+}
+
+function renderChartDetails(point) {
+  document.querySelector("#chart-details").classList.toggle("hidden", !point);
+  elements.spendingChart.querySelectorAll(".bar-column").forEach(column => {
+    const selected = column.dataset.chartKey === point?.key;
+    column.classList.toggle("selected", selected);
+    column.setAttribute("aria-pressed", String(selected));
+  });
+  const rows = document.querySelector("#chart-details-rows");
+  rows.replaceChildren();
+  if (!point) return;
+  document.querySelector("#chart-details-heading").textContent = `${point.detail}の支出`;
+  document.querySelector("#chart-details-summary").textContent = `${point.expenses.length}件 · 合計 ${formatYen(point.amount)}（割り勘後）`;
+  document.querySelector("#chart-details-empty").classList.toggle("hidden", point.expenses.length > 0);
+  document.querySelector("#chart-details-table").classList.toggle("hidden", point.expenses.length === 0);
+  sortExpensesByDate(point.expenses).forEach(expense => {
+    const row = document.createElement("tr");
+    [expense.name, formatDate(expense.date), formatYen(calculatePersonalBurden(expense.amount, expense.people))].forEach(value => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    });
+    rows.append(row);
+  });
 }
 
 function formatCompactYen(amount) {
@@ -175,6 +208,7 @@ function formatCompactYen(amount) {
 }
 
 function setChartPeriod(period) {
+  if (chartPeriod !== period) selectedChartKey = null;
   chartPeriod = period;
   elements.chartPeriodButtons.forEach((button) => {
     const selected = button.dataset.chartPeriod === period;
