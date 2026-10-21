@@ -50,14 +50,14 @@
           <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理"><i class="bi bi-gear" aria-hidden="true"></i></button>
         </header>
 
-        <section id="dashboard-band" class="dashboard-band" aria-label="実質負担額と全小冊子の予算">
+        <section id="dashboard-band" class="dashboard-band" aria-label="利用中の小冊子の実質負担額と予算">
           <div class="dashboard-band-inner">
             <div class="dashboard-band-total">
               <p class="dashboard-band-eyebrow">TOTAL</p>
               <p id="total-burden" class="dashboard-band-amount">¥0</p>
               <p id="total-budget-note" class="dashboard-band-budget hidden">/ <span id="total-budget">¥0</span></p>
             </div>
-            <button id="open-breakdown-button" class="donut-chart-wrap donut-chart-wrap--inverted donut-chart-button" type="button" aria-label="小冊子ごとの金額の内訳を拡大表示" aria-haspopup="dialog" aria-controls="breakdown-dialog" title="タッチして内訳を見る"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="全予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></button>
+            <button id="open-breakdown-button" class="donut-chart-wrap donut-chart-wrap--inverted donut-chart-button" type="button" aria-label="小冊子ごとの金額の内訳を拡大表示" aria-haspopup="dialog" aria-controls="breakdown-dialog" title="タッチして内訳を見る"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="利用中の小冊子の予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></button>
           </div>
         </section>
       </div>
@@ -74,6 +74,7 @@
                   </button>
                 </div>
                 <div class="section-heading-actions">
+                  <label class="book-view-label"><span class="visually-hidden">小冊子の表示</span><select id="book-view" aria-label="小冊子の表示"><option value="active">利用中</option><option value="archived">アーカイブ</option></select></label>
                   <div class="category-sort-control">
                     <i class="bi bi-sort-down category-sort-icon" aria-hidden="true"></i>
                     <select id="category-sort" class="category-sort" aria-label="小冊子の並び順">
@@ -115,6 +116,7 @@
               </section>
               <section id="chart-details" class="chart-details hidden" aria-labelledby="chart-details-heading">
                 <h3 id="chart-details-heading"></h3>
+                <label class="chart-sort-label">並び順<select id="chart-detail-sort"><option value="date-desc">日付の新しい順</option><option value="date-asc">日付の古い順</option><option value="amount-desc">負担額の大きい順</option><option value="amount-asc">負担額の小さい順</option><option value="name">名前順</option></select></label>
                 <p id="chart-details-summary" class="chart-note" role="status"></p>
                 <p id="chart-details-empty" class="chart-note hidden">この期間の支出はありません</p>
                 <table id="chart-details-table" class="chart-details-table" aria-label="選択した期間の支出一覧">
@@ -151,7 +153,7 @@
 
     <dialog id="breakdown-dialog" class="app-dialog" aria-labelledby="breakdown-title" aria-describedby="breakdown-description">
       <div class="dialog-header"><h2 id="breakdown-title">小冊子ごとの内訳</h2><button class="icon-button" type="button" data-close-dialog="breakdown-dialog" aria-label="閉じる" autofocus>×</button></div>
-      <p id="breakdown-description" class="breakdown-description">全期間の実質負担額（割り勘後）</p>
+      <p id="breakdown-description" class="breakdown-description">利用中の小冊子の実質負担額（全期間・割り勘後）</p>
       <div class="breakdown-chart">
         <div id="breakdown-ring" class="breakdown-ring" aria-hidden="true"></div>
         <div class="breakdown-center"><span>合計</span><strong id="breakdown-total">¥0</strong></div>
@@ -191,13 +193,15 @@
         <fieldset><legend>アイコン</legend><div id="icon-options" class="icon-options"></div></fieldset>
         <p id="category-form-error" class="form-error" role="alert"></p>
         <button class="primary-button" type="submit">保存する</button>
+        <p class="archive-note">アーカイブすると上部の合計・予算・円グラフから除外されます。記録は残り、あとから戻せます。</p>
+        <button id="archive-category-button" class="secondary-button hidden" type="button">この小冊子をアーカイブ</button>
         <button id="delete-category-button" class="danger-button hidden" type="button">この小冊子を削除</button>
       </form>
     </dialog>
 
     <dialog id="settings-dialog" class="app-dialog">
       <div class="dialog-header"><h2>設定・データ管理</h2><button class="icon-button" type="button" data-close-dialog="settings-dialog" aria-label="閉じる">×</button></div>
-      <p class="settings-copy">データはこのブラウザだけに保存されます。CSVには空の小冊子、予算、アイコン、表示順も含まれるため、別端末への引き継ぎに利用できます。</p>
+      <p class="settings-copy">データはこのブラウザだけに保存されます。CSVには空の小冊子、予算、アイコン、表示順、アーカイブ状態も含まれるため、別端末への引き継ぎに利用できます。</p>
       <button id="export-csv-button" class="primary-button" type="button">CSVをエクスポート</button>
 
       <div class="settings-divider" role="separator"></div>
@@ -239,7 +243,7 @@
             <div class="help-ring" role="img" aria-label="予算の50パーセントを使用した例"><span>50<small>%</small></span></div>
             <div><strong>例：予算 ¥10,000 ／ 負担 ¥5,000</strong><p class="help-note">リングは「予算をどれだけ使ったか」。</p></div>
           </div>
-          <ul class="help-list"><li>ホーム：全小冊子の予算と負担の合計</li><li>小冊子内：その小冊子だけの予算と負担</li><li>予算未設定：ホームの割合は「—」</li></ul>
+          <ul class="help-list"><li>ホーム：利用中の小冊子の予算と負担の合計（アーカイブは除外）</li><li>小冊子内：その小冊子だけの予算と負担</li><li>予算未設定：ホームの割合は「—」</li></ul>
         </section>
 
         <section class="help-section" aria-labelledby="help-graph">
@@ -247,12 +251,12 @@
           <div class="help-swipe"><span>BOOKS</span><span><i class="bi bi-arrow-left" aria-hidden="true"></i> 左へスワイプ</span><span>GRAPH</span></div>
           <p class="help-note">下の右側の丸ボタンでも切り替えられます。</p>
           <dl class="help-periods"><div><dt>日</dt><dd>直近7日</dd></div><div><dt>週</dt><dd>直近6週</dd></div><div><dt>月</dt><dd>直近6か月</dd></div></dl>
-          <p class="help-note">すべて割り勘後の金額。週は月曜始まりです。</p>
+          <p class="help-note">すべて割り勘後の金額。週は月曜始まりです。アーカイブした小冊子の支出も含まれます。棒をタップすると明細が開き、日付・負担額・名前で並べ替えられます。</p>
         </section>
 
         <section class="help-section" aria-labelledby="help-sort">
           <h3 id="help-sort"><i class="bi bi-sort-down" aria-hidden="true"></i>小冊子を並べ替える</h3>
-          <ul class="help-list"><li>BOOKS右上で「更新順・名前順・登録順」を選択</li><li>更新順：支出の追加・編集・削除や、小冊子の編集で先頭へ</li><li>選んだ並び順は、このブラウザに保存</li></ul>
+          <ul class="help-list"><li>BOOKS右上で「更新順・名前順・登録順」を選択</li><li>更新順：支出の追加・編集・削除や、小冊子の編集で先頭へ</li><li>選んだ並び順は、このブラウザに保存</li><li>小冊子の編集画面からアーカイブ・復元が可能</li><li>BOOKSの「利用中」を「アーカイブ」に切り替えると保存した冊子を閲覧できます</li></ul>
         </section>
 
         <section class="help-section" aria-labelledby="help-receipt">
@@ -271,3 +275,4 @@
     <script type="module" src="js/app.js"></script>
   </body>
 </html>
+

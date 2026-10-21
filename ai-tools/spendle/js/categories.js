@@ -8,6 +8,15 @@ export function calculateCategoryBurden(expenses, categoryId) {
     .reduce((total, expense) => total + calculatePersonalBurden(expense.amount, expense.people), 0);
 }
 
+export function getActiveCategories(categories) {
+  return categories.filter(category => !category.archived);
+}
+
+export function getActiveExpenses(expenses, categories) {
+  const activeIds = new Set(getActiveCategories(categories).map(category => category.id));
+  return expenses.filter(expense => activeIds.has(expense.categoryId));
+}
+
 export function calculateTotalBudget(categories) {
   return categories.reduce((total, category) => total + (Number.isInteger(category.budget) && category.budget > 0 ? category.budget : 0), 0);
 }
@@ -17,7 +26,7 @@ export function calculatePersonalBurden(amount, people) {
 }
 
 export function createCategory(name, icon, order, budget) {
-  return { id: createId(), name, icon, budget, createdAt: new Date().toISOString(), order };
+  return { id: createId(), name, icon, budget, archived: false, createdAt: new Date().toISOString(), order };
 }
 
 function createId() {
@@ -45,3 +54,4 @@ export function touchCategories(categories, ids, updatedAt = new Date().toISOStr
     if (ids.includes(category.id)) category.updatedAt = updatedAt;
   });
 }
+
