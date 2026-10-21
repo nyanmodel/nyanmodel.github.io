@@ -1,11 +1,16 @@
-import { sortCategories, touchCategories, calculateCategoryBurden, calculatePersonalBurden, calculateTotalBudget, createCategory, getCategoryById } from "./categories.js";
+import { getActiveCategories, getActiveExpenses, sortCategories, touchCategories, calculateCategoryBurden, calculatePersonalBurden, calculateTotalBudget, createCategory, getCategoryById } from "./categories.js";
 import { createSpendingSeries, createChartScale } from "./charts.js";
 import { exportExpensesAsCsv, parseExpensesCsv } from "./csv.js";
-import { createExpense, sortExpensesByDate, validateExpense } from "./expenses.js";
+import { sortChartExpenses, createExpense, sortExpensesByDate, validateExpense } from "./expenses.js";
 import { recognizeReceiptAmount } from "./ocr.js";
 import { loadData, saveData } from "./storage.js";
 
-const icons = ["bi-airplane", "bi-cup-hot", "bi-music-note-beamed", "bi-car-front", "bi-pc-display", "bi-cart", "bi-house", "bi-controller", "bi-gift", "bi-book", "bi-cup-straw", "bi-stars"];
+const iconGroups = [
+  { name: "旅行・お出かけ", icons: [["bi-airplane", "旅行"], ["bi-train-front", "電車"], ["bi-car-front", "車"], ["bi-building", "宿泊"], ["bi-camera", "観光"], ["bi-tree", "アウトドア"]] },
+  { name: "食事・暮らし", icons: [["bi-fork-knife", "食事"], ["bi-cup-hot", "カフェ"], ["bi-cup-straw", "ドリンク"], ["bi-cart", "買い物"], ["bi-house", "住まい"], ["bi-basket", "日用品"], ["bi-heart-pulse", "健康"], ["bi-scissors", "美容"]] },
+  { name: "趣味・イベント", icons: [["bi-music-note-beamed", "音楽・ライブ"], ["bi-controller", "ゲーム"], ["bi-book", "本・学び"], ["bi-film", "映画"], ["bi-pc-display", "ガジェット"], ["bi-palette", "創作"], ["bi-gift", "プレゼント"], ["bi-balloon", "お祝い"], ["bi-stars", "特別なこと"], ["bi-journal-bookmark", "その他"]] },
+];
+const icons = iconGroups.flatMap(group => group.icons.map(([icon]) => icon));
 const legacyEmojiIcons = {
   "✈️": "bi-airplane", "🍜": "bi-cup-hot", "🎵": "bi-music-note-beamed", "🚗": "bi-car-front",
   "💻": "bi-pc-display", "🛒": "bi-cart", "🏠": "bi-house", "🎮": "bi-controller",
@@ -21,6 +26,7 @@ let ocrRequestId = 0;
 let chartPeriod = "day";
 let selectedChartKey = null;
 let homePage = 0;
+let categoryViewMode = "active";
 
 const elements = {
   categorySort: document.querySelector("#category-sort"),
@@ -85,16 +91,16 @@ function createCategoryIcon(iconName, className) {
 }
 
 function render() {
-  const total = data.expenses.reduce((sum, expense) => sum + calculatePersonalBurden(expense.amount, expense.people), 0);
+  const total = getActiveExpenses(data.expenses, data.categories).reduce((sum, expense) => sum + calculatePersonalBurden(expense.amount, expense.people), 0);
   elements.totalBurden.textContent = formatYen(total);
-  renderBudgetChart(total, calculateTotalBudget(data.categories));
+  renderBudgetChart(total, calculateTotalBudget(getActiveCategories(data.categories)));
   renderCategories();
   renderSpendingChart();
   if (selectedCategoryId) renderCategoryDetail();
 }
 
 function openBreakdownDialog() {
-  const entries = data.categories.map((category, index) => ({
+  const entries = getActiveCategories(data.categories).map((category, index) => ({
     name: category.name,
     amount: calculateCategoryBurden(data.expenses, category.id),
     color: `hsl(${(214 + index * 137.508) % 360} 65% 46%)`
@@ -190,7 +196,8 @@ function renderChartDetails(point) {
   document.querySelector("#chart-details-summary").textContent = `${point.expenses.length}件 · 合計 ${formatYen(point.amount)}（割り勘後）`;
   document.querySelector("#chart-details-empty").classList.toggle("hidden", point.expenses.length > 0);
   document.querySelector("#chart-details-table").classList.toggle("hidden", point.expenses.length === 0);
-  sortExpensesByDate(point.expenses).forEach(expense => {
+  document.querySelector("#chart-detail-sort").value = data.chartDetailSort || "date-desc";
+  sortChartExpenses(point.expenses, data.chartDetailSort).forEach(expense => {
     const row = document.createElement("tr");
     [expense.name, formatDate(expense.date), formatYen(calculatePersonalBurden(expense.amount, expense.people))].forEach(value => {
       const cell = document.createElement("td");
@@ -260,7 +267,16 @@ function handleHomePageScroll() {
 function renderCategories() {
   elements.categoryList.replaceChildren();
   elements.categorySort.value = ["updated", "name", "created"].includes(data.categorySort) ? data.categorySort : "updated";
-  const categories = sortCategories(data.categories, data.expenses, elements.categorySort.value);
+  document.querySelector("#book-view").value = categoryViewMode;
+  const archived = categoryViewMode === "archived";
+  const categories = sortCategories(data.categories.filter(category => Boolean(category.archived) === archived), data.expenses, elements.categorySort.value);
+  if (archived && !categories.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "アーカイブした小冊子はありません。小冊子の編集画面からアーカイブできます。";
+    elements.categoryList.append(empty);
+    return;
+  }
   if (!categories.length) { elements.categoryList.append(elements.emptyCategories.content.cloneNode(true)); return; }
   categories.forEach((category) => {
     const card = document.createElement("button"); card.type = "button"; card.className = "category-card"; card.setAttribute("aria-label", `${category.name}を開く`);
@@ -274,7 +290,7 @@ function renderCategories() {
       card.append(fill);
     }
     const icon = createCategoryIcon(category.icon, "category-icon");
-    const name = document.createElement("span"); name.className = "category-name"; name.textContent = category.name;
+    const name = document.createElement("span"); name.className = "category-name"; name.textContent = category.archived ? `${category.name}（アーカイブ）` : category.name;
     const amount = document.createElement("span"); amount.className = "category-amount"; amount.textContent = formatYen(burden);
     const meta = document.createElement("span");
     if (budget) {
@@ -306,7 +322,7 @@ function renderCategoryDetail() {
   const category = getCategoryById(data.categories, selectedCategoryId);
   if (!category) { returnHome(); return; }
   const expenses = sortExpensesByDate(data.expenses.filter((expense) => expense.categoryId === category.id));
-  elements.pageTitle.textContent = category.name; elements.pageTitle.classList.remove("app-logo"); elements.detailCategoryIcon.replaceChildren(createCategoryIcon(category.icon, ""));
+  elements.pageTitle.textContent = category.archived ? `${category.name}（アーカイブ）` : category.name; elements.pageTitle.classList.remove("app-logo"); elements.detailCategoryIcon.replaceChildren(createCategoryIcon(category.icon, ""));
   const categoryBurden = calculateCategoryBurden(data.expenses, category.id);
   elements.categoryBurden.textContent = formatYen(categoryBurden); elements.categoryCount.textContent = `${expenses.length}件の支出`;
   renderCategoryDonutChart(categoryBurden, getCategoryBudget(category));
@@ -329,18 +345,18 @@ function createExpenseItem(expense) {
 function populateCategorySelect(selectedId) {
   elements.expenseCategory.replaceChildren();
   const placeholder = new Option("小冊子を選択", ""); placeholder.disabled = true; elements.expenseCategory.add(placeholder);
-  data.categories.forEach((category) => elements.expenseCategory.add(new Option(category.name, category.id)));
+  data.categories.filter(category => !category.archived || category.id === selectedId).forEach((category) => elements.expenseCategory.add(new Option(category.archived ? `${category.name}（アーカイブ）` : category.name, category.id)));
   elements.expenseCategory.value = selectedId || "";
 }
 
 function openExpenseDialog(expense = null) {
-  if (!data.categories.length) { window.alert("先に小冊子を1つ作成してください。"); openCategoryDialog(); return; }
+  if (!getActiveCategories(data.categories).length && !expense && !selectedCategoryId) { window.alert("先に小冊子を1つ作成してください。"); openCategoryDialog(); return; }
   ocrRequestId++;
   elements.ocrImageButton.disabled = false;
   elements.ocrCandidates.replaceChildren(); elements.ocrCandidates.classList.add("hidden");
   elements.expenseForm.reset(); elements.expenseError.textContent = ""; elements.expenseId.value = expense?.id || ""; elements.expenseDialogTitle.textContent = expense ? "支出を編集" : "支出を登録";
   elements.expenseName.value = expense?.name || ""; elements.expenseAmount.value = expense?.amount || ""; elements.expensePeople.value = expense?.people || 1; elements.expenseDate.value = expense?.date || today();
-  const defaultCategoryId = expense?.categoryId || selectedCategoryId || (data.categories.length === 1 ? data.categories[0].id : "");
+  const defaultCategoryId = expense?.categoryId || selectedCategoryId || (getActiveCategories(data.categories).length === 1 ? getActiveCategories(data.categories)[0].id : "");
   populateCategorySelect(defaultCategoryId); updateBurdenPreview(); setOcrStatus(""); elements.expenseDialog.showModal(); elements.expenseName.focus();
 }
 
@@ -420,7 +436,26 @@ function deleteExpense(expenseId) {
 
 function renderIconOptions() {
   elements.iconOptions.replaceChildren();
-  icons.forEach((icon) => { const button = document.createElement("button"); button.type = "button"; button.className = `icon-choice${icon === selectedIcon ? " selected" : ""}`; button.append(createCategoryIcon(icon, "")); button.setAttribute("aria-label", `${icon.replace("bi-", "")} を選択`); button.setAttribute("aria-pressed", String(icon === selectedIcon)); button.addEventListener("click", () => { selectedIcon = icon; renderIconOptions(); }); elements.iconOptions.append(button); });
+  const groups = [...iconGroups];
+  if (!icons.includes(selectedIcon)) groups.push({ name: "現在のアイコン", icons: [[selectedIcon, "現在のアイコン"]] });
+  groups.forEach(group => {
+    const title = document.createElement("p"); title.className = "icon-group-title"; title.textContent = group.name;
+    const choices = document.createElement("div"); choices.className = "icon-group-choices";
+    group.icons.forEach(([icon, label]) => {
+      const button = document.createElement("button"); button.type = "button";
+      button.className = `icon-choice${icon === selectedIcon ? " selected" : ""}`;
+      const text = document.createElement("span"); text.textContent = label;
+      button.append(createCategoryIcon(icon, ""), text);
+      button.setAttribute("aria-label", `${label}を選択`); button.setAttribute("aria-pressed", String(icon === selectedIcon));
+      button.addEventListener("click", () => { selectedIcon = icon; renderIconOptions(); choicesForFocus(icon); });
+      button.dataset.icon = icon; choices.append(button);
+    });
+    elements.iconOptions.append(title, choices);
+  });
+}
+
+function choicesForFocus(icon) {
+  [...elements.iconOptions.querySelectorAll("button")].find(button => button.dataset.icon === icon)?.focus();
 }
 
 function getCategoryBudget(category) {
@@ -460,6 +495,9 @@ function renderCategoryDonutChart(categoryBurden, categoryBudget) {
 
 function openCategoryDialog(category = null) {
   elements.categoryForm.reset(); elements.categoryError.textContent = ""; elements.categoryId.value = category?.id || ""; elements.categoryDialogTitle.textContent = category ? "小冊子を編集" : "小冊子を作成"; elements.categoryName.value = category?.name || ""; elements.categoryBudget.value = getCategoryBudget(category || {} ) || ""; selectedIcon = category?.icon || icons[0];
+  const archiveButton = document.querySelector("#archive-category-button");
+  archiveButton.classList.toggle("hidden", !category);
+  archiveButton.textContent = category?.archived ? "アーカイブから戻す" : "この小冊子をアーカイブ";
   elements.deleteCategoryButton.classList.toggle("hidden", !category); renderIconOptions(); elements.categoryDialog.showModal(); elements.categoryName.focus();
 }
 
@@ -469,7 +507,7 @@ function saveCategory(event) {
   if (!Number.isInteger(budget) || budget < 0) { elements.categoryError.textContent = "予算は0円以上の整数で入力してください。"; return; }
   const id = elements.categoryId.value;
   if (id) { const category = getCategoryById(data.categories, id); Object.assign(category, { name, icon: selectedIcon, budget, updatedAt: new Date().toISOString() }); }
-  else data.categories.push(createCategory(name, selectedIcon, data.categories.length, budget));
+  else { data.categories.push(createCategory(name, selectedIcon, data.categories.length, budget)); categoryViewMode = "active"; }
   elements.categoryDialog.close(); persistAndRender();
 }
 
@@ -497,7 +535,7 @@ function importExpensesFromCsv(text, mode) {
     if (existing) { categoryIdMap.set(importedCategory.id, existing.id); return; }
     const order = mode === "append" ? data.categories.length : importedCategory.order;
     const category = createCategory(importedCategory.name, importedCategory.icon, order, importedCategory.budget);
-    Object.assign(category, { id: importedCategory.id, createdAt: importedCategory.createdAt || category.createdAt, updatedAt: importedCategory.updatedAt || "" });
+    Object.assign(category, { id: importedCategory.id, createdAt: importedCategory.createdAt || category.createdAt, updatedAt: importedCategory.updatedAt || "", archived: importedCategory.archived === true });
     data.categories.push(category);
     categoryIdMap.set(importedCategory.id, category.id);
     importedCategories++;
@@ -534,6 +572,21 @@ function deleteCurrentCategory() {
   data.categories = data.categories.filter((category) => category.id !== categoryId); data.expenses = data.expenses.filter((expense) => expense.categoryId !== categoryId); elements.categoryDialog.close(); returnHome(); persistAndRender();
 }
 
+document.querySelector("#archive-category-button").addEventListener("click", () => {
+  const category = getCategoryById(data.categories, elements.categoryId.value);
+  if (!category) return;
+  category.archived = !category.archived;
+  touchCategories(data.categories, [category.id]);
+  categoryViewMode = category.archived ? "archived" : "active";
+  elements.categoryDialog.close(); returnHome(); persistAndRender();
+});
+document.querySelector("#book-view").addEventListener("change", event => {
+  categoryViewMode = event.target.value; renderCategories();
+});
+document.querySelector("#chart-detail-sort").addEventListener("change", event => {
+  data.chartDetailSort = event.target.value; persistAndRender();
+});
+
 document.querySelector("#open-breakdown-button").addEventListener("click", openBreakdownDialog);
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => document.querySelector(`#${button.dataset.closeDialog}`).close()));
@@ -558,3 +611,4 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").catch((error) => console.warn("Service Worker registration failed.", error));
   });
 }
+

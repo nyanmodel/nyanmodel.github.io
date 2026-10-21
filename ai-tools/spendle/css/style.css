@@ -1529,3 +1529,19 @@ h2 {
   .breakdown-legend li { grid-template-columns: 10px minmax(0, 1fr); }
   .breakdown-value { grid-column: 2; text-align: left; }
 }
+
+
+/* Book archive filter, chart ordering and labelled icon choices. */
+.section-heading-actions { flex-wrap: wrap; justify-content: flex-end; }
+.book-view-label select, .chart-sort-label select {
+  min-height: 44px; border: 1px solid #b7ccdf; border-radius: 12px;
+  background: #f4f8fc; color: #004ca0; padding: 8px 10px; font: inherit; font-size: 0.8rem;
+}
+.chart-sort-label { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 12px 0; font-size: 0.8rem; }
+.archive-note { font-size: 0.8rem; color: var(--muted); line-height: 1.6; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.icon-options { display: block; }
+.icon-group-title { margin: 12px 0 8px; font-size: 0.8rem; font-weight: 600; }
+.icon-group-choices { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.icon-group-choices .icon-choice { width: 100%; height: auto; min-height: 64px; padding: 8px 2px; display: flex; flex-direction: column; gap: 5px; align-items: center; justify-content: center; }
+.icon-choice span { font-size: 0.62rem; line-height: 1.3; }
