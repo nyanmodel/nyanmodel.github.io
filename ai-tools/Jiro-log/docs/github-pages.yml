@@ -1,0 +1,53 @@
+# Template: place at REPOSITORY ROOT .github/workflows/pages.yml when switching
+# Settings > Pages > Source to GitHub Actions. This file is not active here.
+name: Publish complete site with Jiro Log
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: ai-tools/Jiro-log/package-lock.json
+      - run: npm ci
+        working-directory: ai-tools/Jiro-log
+      - run: npm test
+        working-directory: ai-tools/Jiro-log
+      - run: npm run build
+        working-directory: ai-tools/Jiro-log
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+      - name: Preserve existing site and overlay app build
+        run: |
+          mkdir -p "$RUNNER_TEMP/site"
+          rsync -a --exclude='.git/' --exclude='.github/' --exclude='node_modules/' --exclude='.env*' --exclude='ai-tools/Jiro-log/' ./ "$RUNNER_TEMP/site/"
+          mkdir -p "$RUNNER_TEMP/site/ai-tools/Jiro-log"
+          cp -a ai-tools/Jiro-log/dist/. "$RUNNER_TEMP/site/ai-tools/Jiro-log/"
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
