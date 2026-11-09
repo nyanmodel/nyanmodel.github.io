@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="5;url=../nyanfoglio/">
+  <link rel="canonical" href="https://nyanmodel.com/ai-tools/nyanfoglio/">
+  <title>Nyanfoglio. に移動します</title>
+</head>
+<body>
+  <p><a href="../nyanfoglio/">Nyanfoglio. を開く</a></p>
+  <script>
+    // Update an existing PWA worker before leaving its old scope.
+    const redirect = () => location.replace('../nyanfoglio/' + location.search + location.hash);
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(console.warn).finally(redirect);
+    } else {
+      redirect();
+    }
+  </script>
+</body>
+</html>
