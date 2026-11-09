@@ -20,8 +20,22 @@ export function sortExpensesByDate(expenses) {
   });
 }
 
+export function sortChartExpenses(expenses, sort = "date-desc") {
+  const names = new Intl.Collator("ja", { numeric: true, sensitivity: "base" });
+  const byDate = (a, b) => b.date.localeCompare(a.date) || (b.createdAt || "").localeCompare(a.createdAt || "") || a.id.localeCompare(b.id);
+  const burden = expense => calculatePersonalBurden(expense.amount, expense.people);
+  return [...expenses].sort((a, b) => {
+    if (sort === "amount-desc") return burden(b) - burden(a) || byDate(a, b);
+    if (sort === "amount-asc") return burden(a) - burden(b) || byDate(a, b);
+    if (sort === "date-asc") return byDate(b, a);
+    if (sort === "name") return names.compare(a.name, b.name) || byDate(a, b);
+    return byDate(a, b);
+  });
+}
+
 export { calculatePersonalBurden };
 
 function isValidDate(value) {
   return /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(new Date(`${value}T00:00:00`).getTime());
 }
+

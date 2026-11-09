@@ -1,4 +1,4 @@
-const CACHE_NAME = "nyanfoglio-v17";
+const CACHE_NAME = "nyanfoglio-v18";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -29,3 +29,4 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   event.respondWith(caches.match(event.request).then((cachedResponse) => cachedResponse || fetch(event.request)));
 });
+

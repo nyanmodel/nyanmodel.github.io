@@ -22,13 +22,14 @@ const context = vm.createContext({
   window: { confirm: () => true, alert() {} },
 });
 vm.runInContext(handler, context);
-const categories = [{ id: 'c1', name: '食費', icon: 'bi-cart', budget: 3000, order: 0, updatedAt: '2026-09-08T01:00:00.000Z' }];
+const categories = [{ id: 'c1', name: '食費', icon: 'bi-cart', budget: 3000, order: 0, archived: true, updatedAt: '2026-09-08T01:00:00.000Z' }];
 const expenses = ['e1', 'e2'].map(id => ({
   id, categoryId: 'c1', date: '2026-09-07', name: 'コーヒー', amount: 300, people: 1,
 }));
 const backup = createBackupCsv(expenses, categories);
 context.importExpensesFromCsv(backup, 'replace');
 assert.equal(context.data.categories[0].updatedAt, categories[0].updatedAt);
+assert.equal(context.data.categories[0].archived, true, 'Replace must preserve archived state');
 assert.equal(context.data.expenses.length, 2, 'Replace must preserve distinct IDs with identical content');
 assert.equal(context.data.expenses.map(row => row.id).join(','), 'e1,e2');
 context.importExpensesFromCsv(backup, 'append');
@@ -38,4 +39,5 @@ assert.equal(context.data.expenses.length, 3, 'Append must preserve a new ID wit
 const legacy = '日付,カテゴリ,支出名,合計金額,割り勘人数,自分の負担額\n2026-09-07,食費,コーヒー,300,1,300';
 context.importExpensesFromCsv(legacy, 'append');
 assert.equal(context.data.expenses.length, 3, 'Legacy imports must still deduplicate by content');
-console.log('5 CSV import checks passed');
+console.log('6 CSV import checks passed');
+
