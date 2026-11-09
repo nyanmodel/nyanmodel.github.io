@@ -40,6 +40,25 @@ const elements = {
   settingsDialog: document.querySelector("#settings-dialog"), exportCsvButton: document.querySelector("#export-csv-button"), importCsvButton: document.querySelector("#import-csv-button"), importCsvInput: document.querySelector("#import-csv-input"), helpDialog: document.querySelector("#help-dialog"), emptyCategories: document.querySelector("#empty-categories-template"), emptyExpenses: document.querySelector("#empty-expenses-template")
 };
 
+// Unlike dvh, the visual viewport also shrinks when the iOS keyboard opens.
+function updateDialogViewport() {
+  const viewport = window.visualViewport;
+  if (!viewport) return;
+  const style = document.documentElement.style;
+  style.setProperty("--dialog-viewport-height", `${viewport.height}px`);
+  style.setProperty("--dialog-viewport-top", `${viewport.offsetTop}px`);
+  style.setProperty("--dialog-viewport-bottom", `${Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)}px`);
+}
+
+function showAppDialog(dialog) {
+  updateDialogViewport();
+  dialog.showModal();
+  (dialog.querySelector(".dialog-scroll") || dialog).scrollTop = 0;
+}
+
+window.visualViewport?.addEventListener("resize", updateDialogViewport);
+window.visualViewport?.addEventListener("scroll", updateDialogViewport);
+
 function formatYen(amount) { return `¥${new Intl.NumberFormat("ja-JP").format(amount)}`; }
 function today() { return new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString().slice(0, 10); }
 function formatDate(date) { return date.replaceAll("-", "/"); }
@@ -134,7 +153,7 @@ function openBreakdownDialog() {
     ? `conic-gradient(${stops.join(", ")})` : "rgba(0, 76, 160, 0.12)";
   document.querySelector("#breakdown-total").textContent = formatYen(total);
   document.querySelector("#breakdown-empty").classList.toggle("hidden", total > 0);
-  document.querySelector("#breakdown-dialog").showModal();
+  showAppDialog(document.querySelector("#breakdown-dialog"));
 }
 
 function renderSpendingChart() {
@@ -391,7 +410,7 @@ function openExpenseDialog(expense = null) {
   elements.expenseForm.reset(); elements.expenseError.textContent = ""; elements.expenseId.value = expense?.id || ""; elements.expenseDialogTitle.textContent = expense ? "支出を編集" : "支出を登録";
   elements.expenseName.value = expense?.name || ""; elements.expenseAmount.value = expense?.amount || ""; elements.expensePeople.value = expense?.people || 1; elements.expenseDate.value = expense?.date || today();
   const defaultCategoryId = expense?.categoryId || selectedCategoryId || (getActiveCategories(data.categories).length === 1 ? getActiveCategories(data.categories)[0].id : "");
-  populateCategorySelect(defaultCategoryId); updateBurdenPreview(); setOcrStatus(""); elements.expenseDialog.showModal(); elements.expenseName.focus();
+  populateCategorySelect(defaultCategoryId); updateBurdenPreview(); setOcrStatus(""); showAppDialog(elements.expenseDialog); elements.expenseName.focus();
 }
 
 function setOcrStatus(message, warn = false) {
@@ -532,7 +551,7 @@ function openCategoryDialog(category = null) {
   const archiveButton = document.querySelector("#archive-category-button");
   archiveButton.classList.toggle("hidden", !category);
   archiveButton.textContent = category?.archived ? "アーカイブから戻す" : "この小冊子をアーカイブ";
-  elements.deleteCategoryButton.classList.toggle("hidden", !category); renderIconOptions(); elements.categoryDialog.showModal(); elements.categoryName.focus();
+  elements.deleteCategoryButton.classList.toggle("hidden", !category); renderIconOptions(); showAppDialog(elements.categoryDialog); elements.categoryName.focus();
 }
 
 function saveCategory(event) {
@@ -618,7 +637,7 @@ function openBookActions(category) {
   actionCategory = category;
   document.querySelector("#book-actions-title").textContent = category.name;
   document.querySelector("#book-action-archive").textContent = category.archived ? "アーカイブから戻す" : "アーカイブ";
-  if (!bookActions.open) bookActions.showModal();
+  if (!bookActions.open) showAppDialog(bookActions);
 }
 document.querySelector("#book-action-edit").addEventListener("click", () => { bookActions.close(); openCategoryDialog(actionCategory); });
 document.querySelector("#book-action-archive").addEventListener("click", () => { bookActions.close(); toggleBookArchive(actionCategory); });
@@ -634,7 +653,7 @@ document.querySelector("#chart-detail-sort").addEventListener("change", event =>
 document.querySelector("#open-breakdown-button").addEventListener("click", openBreakdownDialog);
 
 document.querySelectorAll("[data-close-dialog]").forEach((button) => button.addEventListener("click", () => document.querySelector(`#${button.dataset.closeDialog}`).close()));
-elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.helpButton.addEventListener("click", () => elements.helpDialog.showModal()); elements.settingsButton.addEventListener("click", () => elements.settingsDialog.showModal());
+elements.addCategoryButton.addEventListener("click", () => openCategoryDialog()); elements.addExpenseButton.addEventListener("click", () => openExpenseDialog()); elements.backButton.addEventListener("click", returnHome); elements.editCategoryButton.addEventListener("click", () => openCategoryDialog(getCategoryById(data.categories, selectedCategoryId))); elements.helpButton.addEventListener("click", () => showAppDialog(elements.helpDialog)); elements.settingsButton.addEventListener("click", () => showAppDialog(elements.settingsDialog));
 elements.expenseAmount.addEventListener("input", updateBurdenPreview); elements.expensePeople.addEventListener("input", updateBurdenPreview); elements.expenseForm.addEventListener("submit", saveExpense); elements.categoryForm.addEventListener("submit", saveCategory); elements.deleteCategoryButton.addEventListener("click", deleteCurrentCategory); elements.exportCsvButton.addEventListener("click", () => exportExpensesAsCsv(sortExpensesByDate(data.expenses), data.categories));
 elements.ocrImageButton.addEventListener("click", () => elements.ocrImageInput.click()); elements.ocrImageInput.addEventListener("change", handleReceiptScan);
 elements.importCsvButton.addEventListener("click", () => elements.importCsvInput.click()); elements.importCsvInput.addEventListener("change", handleCsvFileSelected);
