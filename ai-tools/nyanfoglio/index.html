@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#c4d7e7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <title>Nyanfoglio.</title>
+    <meta name="description" content="割り勘後の実質負担額を、やさしく見える化するシンプルな支出管理アプリ。" />
+    <link rel="canonical" href="https://nyanmodel.com/ai-tools/nyanfoglio/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ja_JP" />
+    <meta property="og:site_name" content="Nyanfoglio." />
+    <meta property="og:title" content="Nyanfoglio." />
+    <meta property="og:description" content="割り勘後の実質負担額を、やさしく見える化するシンプルな支出管理アプリ。" />
+    <meta property="og:url" content="https://nyanmodel.com/ai-tools/nyanfoglio/" />
+    <meta property="og:image" content="https://nyanmodel.com/ai-tools/nyanfoglio/img/og-image.png" />
+    <meta property="og:image:secure_url" content="https://nyanmodel.com/ai-tools/nyanfoglio/img/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Nyanfoglio. — 支出をまとめて、わたしの負担を見える化。" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@NyanModel" />
+    <meta name="twitter:title" content="Nyanfoglio." />
+    <meta name="twitter:description" content="割り勘後の実質負担額を、やさしく見える化するシンプルな支出管理アプリ。" />
+    <meta name="twitter:image" content="https://nyanmodel.com/ai-tools/nyanfoglio/img/og-image.png" />
+    <meta name="twitter:image:alt" content="Nyanfoglio. — 支出をまとめて、わたしの負担を見える化。" />
+    <link rel="icon" href="img/dna-solid-full.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="img/apple-touch-icon.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.13.1/font/bootstrap-icons.min.css" integrity="sha512-t7Few9xlddEmgd3oKZQahkNI4dS6l80+eGEzFQiqtyVYdvcSG2D3Iub77R20BdotfRPA9caaRkg1tyaJiPmO0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div id="ambient-background" class="ambient-background" aria-hidden="true">
+      <div id="ambient-gradient" class="ambient-gradient"><span class="ambient-accent"></span></div>
+    </div>
+    <main class="app-shell app-shell--home">
+      <div class="app-hero">
+        <header class="app-header">
+          <button id="back-button" class="icon-button hidden" type="button" aria-label="トップへ戻る">←</button>
+          <div>
+            <h1 id="page-title" class="app-logo">Nyanfoglio.</h1>
+          </div>
+          <button id="help-button" class="icon-button" type="button" aria-label="使い方"><i class="bi bi-question-circle" aria-hidden="true"></i></button>
+          <button id="settings-button" class="icon-button" type="button" aria-label="設定とデータ管理"><i class="bi bi-gear" aria-hidden="true"></i></button>
+        </header>
+
+        <section id="dashboard-band" class="dashboard-band" aria-label="利用中の小冊子の実質負担額と予算">
+          <div class="dashboard-band-inner">
+            <div class="dashboard-band-total">
+              <p class="dashboard-band-eyebrow">TOTAL</p>
+              <p id="total-burden" class="dashboard-band-amount">¥0</p>
+              <p id="total-budget-note" class="dashboard-band-budget hidden">/ <span id="total-budget">¥0</span></p>
+            </div>
+            <button id="open-breakdown-button" class="donut-chart-wrap donut-chart-wrap--inverted donut-chart-button" type="button" aria-label="小冊子ごとの金額の内訳を拡大表示" aria-haspopup="dialog" aria-controls="breakdown-dialog" title="タッチして内訳を見る"><canvas id="budget-donut-chart" width="144" height="144" role="img" aria-label="利用中の小冊子の予算に対する実質負担額の割合"></canvas><span id="budget-percentage">—</span></button>
+          </div>
+        </section>
+      </div>
+
+      <section id="home-view" aria-label="ホーム">
+        <div id="home-pages" class="home-pages">
+          <section class="home-page" aria-labelledby="books-heading">
+            <div class="home-page-content">
+              <div class="section-heading">
+                <div class="books-heading-group">
+                  <h2 id="books-heading">BOOKS</h2>
+                  <button id="add-category-button" class="book-create-button" type="button" aria-label="小冊子を作成" title="小冊子を作成">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                  </button>
+                </div>
+                <div class="section-heading-actions">
+                  <label class="book-view-label"><span class="visually-hidden">小冊子の表示</span><select id="book-view" aria-label="小冊子の表示"><option value="active">利用中</option><option value="archived">アーカイブ</option></select></label>
+                  <div class="category-sort-control">
+                    <i class="bi bi-sort-down category-sort-icon" aria-hidden="true"></i>
+                    <select id="category-sort" class="category-sort" aria-label="小冊子の並び順">
+                    <option value="updated">更新順</option>
+                    <option value="name">名前順</option>
+                    <option value="created">登録順</option>
+                    </select>
+                    <i class="bi bi-chevron-down category-sort-chevron" aria-hidden="true"></i>
+                  </div>
+                </div>
+              </div>
+              <div id="category-list" class="category-grid" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <section class="home-page chart-page" aria-labelledby="chart-heading">
+            <div class="home-page-content">
+              <div class="section-heading chart-heading">
+                <div>
+                  <p class="section-kicker">YOUR SPENDING</p>
+                  <h2 id="chart-heading">GRAPH</h2>
+                </div>
+                <div class="period-switch" role="group" aria-label="集計期間">
+                  <button class="period-button selected" type="button" data-chart-period="day" aria-pressed="true">日</button>
+                  <button class="period-button" type="button" data-chart-period="week" aria-pressed="false">週</button>
+                  <button class="period-button" type="button" data-chart-period="month" aria-pressed="false">月</button>
+                </div>
+              </div>
+              <section class="spending-card" aria-labelledby="chart-summary-label">
+                <div class="spending-summary">
+                  <div>
+                    <p id="chart-summary-label" class="summary-label">直近7日</p>
+                    <p id="chart-total" class="chart-total">¥0</p>
+                  </div>
+                  <p id="chart-range" class="chart-range"></p>
+                </div>
+                <div id="spending-chart" class="bar-chart" role="group" aria-label="直近7日の支出棒グラフ"></div>
+                <p id="chart-empty" class="chart-empty hidden">この期間の支出はまだありません</p>
+              </section>
+              <section id="chart-details" class="chart-details hidden" aria-labelledby="chart-details-heading">
+                <h3 id="chart-details-heading"></h3>
+                <label class="chart-sort-label">並び順<select id="chart-detail-sort"><option value="date-desc">日付の新しい順</option><option value="date-asc">日付の古い順</option><option value="amount-desc">負担額の大きい順</option><option value="amount-asc">負担額の小さい順</option><option value="name">名前順</option></select></label>
+                <p id="chart-details-summary" class="chart-note" role="status"></p>
+                <p id="chart-details-empty" class="chart-note hidden">この期間の支出はありません</p>
+                <table id="chart-details-table" class="chart-details-table" aria-label="選択した期間の支出一覧">
+                  <thead><tr><th scope="col">項目</th><th scope="col">日付</th><th scope="col">実質支出額</th></tr></thead>
+                  <tbody id="chart-details-rows"></tbody>
+                </table>
+              </section>
+            </div>
+          </section>
+        </div>
+        <div class="page-indicator" role="group" aria-label="ホームページ">
+          <button class="page-dot selected" type="button" data-home-page="0" aria-label="BOOKSページ" aria-pressed="true"></button>
+          <button class="page-dot" type="button" data-home-page="1" aria-label="グラフページ" aria-pressed="false"></button>
+        </div>
+      </section>
+
+      <section id="category-view" class="hidden" aria-live="polite">
+        <section class="category-summary">
+          <div id="detail-category-icon" class="detail-icon" aria-hidden="true"></div>
+          <div>
+            <p class="summary-label">この小冊子の実質負担額</p>
+            <p id="category-burden" class="detail-amount">¥0</p>
+            <p id="category-count" class="muted-text">0件の支出</p>
+          </div>
+          <div id="category-donut-wrap" class="donut-chart-wrap donut-chart-wrap--small hidden"><canvas id="category-donut-chart" width="96" height="96" role="img" aria-label="この小冊子の予算に対する実質負担額の割合"></canvas><span id="category-percentage">—</span></div>
+          <button id="edit-category-button" class="icon-button" type="button" aria-label="カテゴリを編集"><i class="bi bi-pencil-square" aria-hidden="true"></i></button>
+        </section>
+        <div class="section-heading"><h2>支出一覧</h2></div>
+        <div id="expense-list" class="expense-list"></div>
+      </section>
+    </main>
+
+    <button id="add-expense-button" class="primary-fab" type="button" aria-label="支出を登録"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></button>
+
+    <dialog id="breakdown-dialog" class="app-dialog" aria-labelledby="breakdown-title" aria-describedby="breakdown-description">
+      <div class="dialog-header"><h2 id="breakdown-title">小冊子ごとの内訳</h2><button class="icon-button" type="button" data-close-dialog="breakdown-dialog" aria-label="閉じる" autofocus>×</button></div>
+      <p id="breakdown-description" class="breakdown-description">利用中の小冊子の実質負担額（全期間・割り勘後）</p>
+      <div class="breakdown-chart">
+        <div id="breakdown-ring" class="breakdown-ring" aria-hidden="true"></div>
+        <div class="breakdown-center"><span>合計</span><strong id="breakdown-total">¥0</strong></div>
+      </div>
+      <p id="breakdown-empty" class="breakdown-description hidden">支出はまだありません。支出を登録すると内訳が表示されます。</p>
+      <ul id="breakdown-legend" class="breakdown-legend" aria-label="小冊子ごとの金額と割合"></ul>
+    </dialog>
+
+    <dialog id="expense-dialog" class="app-dialog">
+      <form id="expense-form" novalidate>
+        <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
+        <input id="expense-id" type="hidden" />
+        <div class="ocr-trigger">
+          <button id="ocr-image-button" class="secondary-button" type="button"><i class="bi bi-receipt" aria-hidden="true"></i>レシートを読み取る</button>
+          <input id="ocr-image-input" class="hidden" type="file" accept="image/*" />
+          <p class="ocr-source-note">撮影またはライブラリから選択</p>
+          <div id="ocr-candidates" class="ocr-candidates hidden" aria-label="読み取った金額候補"></div>
+          <p id="ocr-status" class="ocr-status hidden" role="status"></p>
+        </div>
+        <label>支出名<input id="expense-name" name="name" type="text" autocomplete="off" required maxlength="80" placeholder="例：ラーメン" /></label>
+        <label>合計金額（円）<input id="expense-amount" name="amount" type="number" inputmode="numeric" min="1" step="1" required placeholder="例：1200" /></label>
+        <label>割り勘人数<input id="expense-people" name="people" type="number" inputmode="numeric" min="1" step="1" value="1" required /></label>
+        <section class="burden-preview"><p>あなたの負担額</p><strong id="burden-preview-value">¥0</strong><span id="burden-preview-note">合計金額と人数を入力してください</span></section>
+        <label>小冊子<select id="expense-category" name="categoryId" required></select></label>
+        <label>日付<input id="expense-date" name="date" type="date" required /></label>
+        <p id="expense-form-error" class="form-error" role="alert"></p>
+        <button class="primary-button" type="submit">保存する</button>
+      </form>
+    </dialog>
+
+    <dialog id="category-dialog" class="app-dialog">
+      <form id="category-form" novalidate>
+        <div class="dialog-header"><h2 id="category-dialog-title">小冊子を作成</h2><button class="icon-button" type="button" data-close-dialog="category-dialog" aria-label="閉じる">×</button></div>
+        <input id="category-id" type="hidden" />
+        <label>小冊子名<input id="category-name" type="text" autocomplete="off" required maxlength="40" placeholder="例：大阪旅行" /></label>
+        <label>予算（円）<input id="category-budget" type="number" inputmode="numeric" min="0" step="1" placeholder="未設定の場合は空欄" /></label>
+        <fieldset><legend>アイコン</legend><div id="icon-options" class="icon-options"></div></fieldset>
+        <p id="category-form-error" class="form-error" role="alert"></p>
+        <button class="primary-button" type="submit">保存する</button>
+        <p class="archive-note">アーカイブすると上部の合計・予算・円グラフから除外されます。記録は残り、あとから戻せます。</p>
+        <button id="archive-category-button" class="secondary-button hidden" type="button">この小冊子をアーカイブ</button>
+        <button id="delete-category-button" class="danger-button hidden" type="button">この小冊子を削除</button>
+      </form>
+    </dialog>
+
+    <dialog id="settings-dialog" class="app-dialog">
+      <div class="dialog-header"><h2>設定・データ管理</h2><button class="icon-button" type="button" data-close-dialog="settings-dialog" aria-label="閉じる">×</button></div>
+      <p class="settings-copy">データはこのブラウザだけに保存されます。CSVには空の小冊子、予算、アイコン、表示順、アーカイブ状態も含まれるため、別端末への引き継ぎに利用できます。</p>
+      <button id="export-csv-button" class="primary-button" type="button">CSVをエクスポート</button>
+
+      <div class="settings-divider" role="separator"></div>
+
+      <fieldset class="import-mode">
+        <legend>インポート方法</legend>
+        <label class="radio-option"><input type="radio" name="import-mode" value="append" checked />追記（既存データに追加）</label>
+        <label class="radio-option"><input type="radio" name="import-mode" value="replace" />上書き（既存データをすべて削除して置き換え）</label>
+      </fieldset>
+      <input id="import-csv-input" class="hidden" type="file" accept=".csv,text/csv" />
+      <button id="import-csv-button" class="primary-button" type="button">CSVをインポート</button>
+    </dialog>
+
+    <dialog id="help-dialog" class="app-dialog" aria-labelledby="help-title">
+      <div class="dialog-header"><h2 id="help-title">使い方</h2><button class="icon-button" type="button" data-close-dialog="help-dialog" aria-label="閉じる">×</button></div>
+      <div class="help-guide">
+        <section class="help-section" aria-labelledby="help-start">
+          <h3 id="help-start">まずは、3ステップ</h3>
+          <ol class="help-steps">
+            <li><i class="bi bi-journal-bookmark" aria-hidden="true"></i><div><strong>小冊子をつくる</strong><span>BOOKSの「＋」から。旅行・生活費などで分類。</span></div></li>
+            <li><i class="bi bi-receipt-cutoff" aria-hidden="true"></i><div><strong>支出を記録する</strong><span>右下のレシートボタンから、金額・人数を入力。</span></div></li>
+            <li><i class="bi bi-check-circle" aria-hidden="true"></i><div><strong>自分の負担をチェック</strong><span>TOTALに、すべての支出の割り勘後の合計を表示。</span></div></li>
+          </ol>
+        </section>
+
+        <section class="help-section help-section--tinted" aria-labelledby="help-total">
+          <h3 id="help-total"><i class="bi bi-people" aria-hidden="true"></i>割り勘すると、いくら？</h3>
+          <div class="help-equation" aria-label="例：合計6,000円を3人で割ると、あなたの負担は2,000円">
+            <div><span>合計</span><strong>¥6,000</strong></div><b aria-hidden="true">÷</b>
+            <div><span>人数</span><strong>3人</strong></div><b aria-hidden="true">＝</b>
+            <div class="help-equation-result"><span>あなたの負担</span><strong>¥2,000</strong></div>
+          </div>
+          <p class="help-note">ひとりの支出は「1人」で登録。</p>
+        </section>
+
+        <section class="help-section" aria-labelledby="help-budget">
+          <h3 id="help-budget"><i class="bi bi-pie-chart" aria-hidden="true"></i>予算は、リングで確認</h3>
+          <div class="help-budget-example">
+            <div class="help-ring" role="img" aria-label="予算の50パーセントを使用した例"><span>50<small>%</small></span></div>
+            <div><strong>例：予算 ¥10,000 ／ 負担 ¥5,000</strong><p class="help-note">リングは「予算をどれだけ使ったか」。</p></div>
+          </div>
+          <ul class="help-list"><li>ホーム：利用中の小冊子の予算と負担の合計（アーカイブは除外）</li><li>小冊子内：その小冊子だけの予算と負担</li><li>予算未設定：ホームの割合は「—」</li></ul>
+        </section>
+
+        <section class="help-section" aria-labelledby="help-graph">
+          <h3 id="help-graph"><i class="bi bi-bar-chart" aria-hidden="true"></i>支出の推移を見る</h3>
+          <div class="help-swipe"><span>BOOKS</span><span><i class="bi bi-arrow-left" aria-hidden="true"></i> 左へスワイプ</span><span>GRAPH</span></div>
+          <p class="help-note">下の右側の丸ボタンでも切り替えられます。</p>
+          <dl class="help-periods"><div><dt>日</dt><dd>直近7日</dd></div><div><dt>週</dt><dd>直近6週</dd></div><div><dt>月</dt><dd>直近6か月</dd></div></dl>
+          <p class="help-note">すべて割り勘後の金額。週は月曜始まりです。アーカイブした小冊子の支出も含まれます。棒をタップすると明細が開き、日付・負担額・名前で並べ替えられます。</p>
+        </section>
+
+        <section class="help-section" aria-labelledby="help-sort">
+          <h3 id="help-sort"><i class="bi bi-sort-down" aria-hidden="true"></i>小冊子を並べ替える</h3>
+          <ul class="help-list"><li>BOOKS右上で「更新順・名前順・登録順」を選択</li><li>更新順：支出の追加・編集・削除や、小冊子の編集で先頭へ</li><li>選んだ並び順は、このブラウザに保存</li><li>小冊子の編集画面からアーカイブ・復元が可能</li><li>BOOKSの「利用中」を「アーカイブ」に切り替えると保存した冊子を閲覧できます</li></ul>
+        </section>
+
+        <section class="help-section" aria-labelledby="help-receipt">
+          <h3 id="help-receipt"><i class="bi bi-receipt" aria-hidden="true"></i>レシートから、かんたん入力</h3>
+          <ol class="help-list"><li>支出登録で「レシートを読み取る」をタップ</li><li>撮影するか、ライブラリの写真を選択</li><li>読み取った金額を確認・修正して保存</li></ol>
+          <p class="help-note">日本語の合計・支払額を優先。小計などの候補はタップして選べます。</p>
+          <p class="help-callout"><i class="bi bi-check-circle" aria-hidden="true"></i><strong>読み間違いがあるため、金額は必ず確認。</strong></p>
+          <p class="help-note">初回は読み取り用データのダウンロードが必要です。</p>
+        </section>
+      </div>
+    </dialog>
+
+    <template id="empty-categories-template"><div class="empty-state"><i class="bi bi-journal-bookmark" aria-hidden="true"></i><h2>最初の小冊子を作りましょう</h2><p>旅行、ライブ、生活費など、支出をまとめる単位を作れます。</p></div></template>
+    <template id="empty-expenses-template"><div class="empty-state"><i class="bi bi-receipt" aria-hidden="true"></i><h2>支出はまだありません</h2><p>「支出を登録」から最初の記録を追加できます。</p></div></template>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.min.js" integrity="sha512-nKXmKvJyiGQy343jatQlzDprflyB5c+tKCzGP3Uq67v+lmzfnZUi/ZT+fc6ITZfSC5HhaBKUIvr/nTLCV+7F+Q==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script type="module" src="js/app.js"></script>
+  </body>
+</html>

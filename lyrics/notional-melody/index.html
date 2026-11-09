@@ -12,7 +12,7 @@
     <div id="title">Notional Melody Lyrics</div>
         <div class="contents">
             <details>
-                <summary>Animated-City</summary>
+                <summary id="animated-city">Animated-City</summary>
                 <div class="text">
                     <div class="block">
                         <h4>Music, Lyrics: Childa Bunkyo</h4>
@@ -62,10 +62,12 @@
                         Animated-City
                     </p>
                 </div>
-            </details>
+            <nav class="song-nav" aria-label="歌詞の曲順"><a href="../index.html#notional-melody">曲一覧へ</a>
+<a href="#volcanion">次の歌詞 ›</a></nav>
+</details>
 
             <details>
-                <summary>色違いボルケニオンゲット！</summary>
+                <summary id="volcanion">色違いボルケニオンゲット！</summary>
                 <div class="text">
                     <div class="block">
                         <h4>Music: Kanataquire / Lyrics: RT4K7x8t </h4>
@@ -76,10 +78,13 @@
                             ワザップジョルノとは [単語記事] - ニコニコ大百科</a>
                     </p>
                 </div>
-            </details>
+            <nav class="song-nav" aria-label="歌詞の曲順"><a href="#animated-city">‹ 前の歌詞</a>
+<a href="../index.html#notional-melody">曲一覧へ</a>
+<a href="#interstellar">次の歌詞 ›</a></nav>
+</details>
 
             <details>
-                <summary>Interstellar</summary>
+                <summary id="interstellar">Interstellar</summary>
                 <div class="text">
                     <div class="block">
                         <h4>Music, Lyrics: Childa Bunkyo</h4>
@@ -151,10 +156,13 @@
                         で遠く光る夢の星 
                     </p>
                 </div>   
-            </details>
+            <nav class="song-nav" aria-label="歌詞の曲順"><a href="#volcanion">‹ 前の歌詞</a>
+<a href="../index.html#notional-melody">曲一覧へ</a>
+<a href="#y4r1">次の歌詞 ›</a></nav>
+</details>
 
             <details>
-                <summary>Y4R1-M4S-UN33</summary>
+                <summary id="y4r1">Y4R1-M4S-UN33</summary>
                 <div class="text">
                     <div class="block">
                         <h4>Music: Kanataquire / Lyrics: Childa Bunkyo</h4>
@@ -173,10 +181,13 @@
                         ページめくるこの指から夏の記憶を紡ぎ出す
                     </p>
                 </div>
-            </details>
+            <nav class="song-nav" aria-label="歌詞の曲順"><a href="#interstellar">‹ 前の歌詞</a>
+<a href="../index.html#notional-melody">曲一覧へ</a>
+<a href="#fine">次の歌詞 ›</a></nav>
+</details>
 
             <details>
-                <summary>Fine.</summary>
+                <summary id="fine">Fine.</summary>
                 <div class="text">
                     <div class="block">
                         <h4>Music, Lyrics: Childa Bunkyo</h4>
@@ -187,12 +198,24 @@
                         永遠を夢見る季節
                     </p>
                 </div>
-            </details>
+            <nav class="song-nav" aria-label="歌詞の曲順"><a href="#y4r1">‹ 前の歌詞</a>
+<a href="../index.html#notional-melody">曲一覧へ</a></nav>
+</details>
         </div>
-    </div>
 
     <footer>copyright &copy; UNREAL 2022</footer>
 
     
+<script>
+        function openLinkedSong() {
+            const summary = document.getElementById(location.hash.slice(1));
+            if (summary && summary.parentElement.tagName === 'DETAILS') {
+                summary.parentElement.open = true;
+                summary.scrollIntoView();
+            }
+        }
+        openLinkedSong();
+        window.addEventListener('hashchange', openLinkedSong);
+    </script>
 </body>
 </html>

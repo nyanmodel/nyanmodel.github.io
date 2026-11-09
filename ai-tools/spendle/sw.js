@@ -1,32 +1,25 @@
-const CACHE_NAME = "nyanfoglio-v18";
-const APP_SHELL = [
-  "./",
-  "./index.html",
-  "./css/style.css",
-  "./js/app.js",
-  "./js/storage.js",
-  "./js/categories.js",
-  "./js/charts.js",
-  "./js/expenses.js",
-  "./js/csv.js",
-  "./js/ocr.js",
-  "./manifest.webmanifest",
-  "./img/dna-solid-full.svg",
-  "./img/pwa-icon.svg"
-];
-
-self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)));
-  self.skipWaiting();
+// Replace the old cache-first worker so installed PWAs also reach the new URL.
+const destination = (url) => {
+  const oldUrl = new URL(url);
+  const target = new URL('../nyanfoglio/', self.registration.scope);
+  target.search = oldUrl.search;
+  target.hash = oldUrl.hash;
+  return target.href;
+};
+self.addEventListener('install', (event) => {
+  event.waitUntil(self.skipWaiting());
 });
-
-self.addEventListener("activate", (event) => {
-  event.waitUntil(caches.keys().then((keys) => Promise.all(keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key)))));
-  self.clients.claim();
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter((key) => /^nyanfoglio-v\d+$/.test(key)).map((key) => caches.delete(key)));
+    await self.clients.claim();
+    const windows = await self.clients.matchAll({ type: 'window' });
+    await Promise.all(windows.map((client) => client.navigate(destination(client.url))));
+  })());
 });
-
-self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
-  event.respondWith(caches.match(event.request).then((cachedResponse) => cachedResponse || fetch(event.request)));
+self.addEventListener('fetch', (event) => {
+  if (event.request.mode === 'navigate') {
+    event.respondWith(Promise.resolve(Response.redirect(destination(event.request.url), 302)));
+  }
 });
-
