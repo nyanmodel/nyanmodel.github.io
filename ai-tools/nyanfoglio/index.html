@@ -74,7 +74,6 @@
                   </button>
                 </div>
                 <div class="section-heading-actions">
-                  <label class="book-view-label"><span class="visually-hidden">小冊子の表示</span><select id="book-view" aria-label="小冊子の表示"><option value="active">利用中</option><option value="archived">アーカイブ</option></select></label>
                   <div class="category-sort-control">
                     <i class="bi bi-sort-down category-sort-icon" aria-hidden="true"></i>
                     <select id="category-sort" class="category-sort" aria-label="小冊子の並び順">
@@ -126,10 +125,18 @@
               </section>
             </div>
           </section>
+          <section class="home-page archive-page" aria-labelledby="archive-heading">
+            <div class="home-page-content">
+              <div class="section-heading"><div><p class="section-kicker">SAVED BOOKS</p><h2 id="archive-heading">ARCHIVE</h2></div></div>
+              <p class="archive-note">アーカイブした小冊子です。合計・予算には含まれません。</p>
+              <div id="archive-list" class="category-grid" aria-live="polite"></div>
+            </div>
+          </section>
         </div>
         <div class="page-indicator" role="group" aria-label="ホームページ">
           <button class="page-dot selected" type="button" data-home-page="0" aria-label="BOOKSページ" aria-pressed="true"></button>
           <button class="page-dot" type="button" data-home-page="1" aria-label="グラフページ" aria-pressed="false"></button>
+          <button class="page-dot" type="button" data-home-page="2" aria-label="アーカイブページ" aria-pressed="false"></button>
         </div>
       </section>
 
@@ -184,6 +191,14 @@
       </form>
     </dialog>
 
+    <dialog id="book-actions-dialog" class="app-dialog" aria-labelledby="book-actions-title">
+      <h2 id="book-actions-title"></h2>
+      <div class="book-actions">
+        <button id="book-action-edit" class="primary-button" type="button">詳細を編集する</button>
+        <button id="book-action-archive" class="secondary-button" type="button">アーカイブ</button>
+        <button class="secondary-button" type="button" data-close-dialog="book-actions-dialog">キャンセル</button>
+      </div>
+    </dialog>
     <dialog id="category-dialog" class="app-dialog">
       <form id="category-form" novalidate>
         <div class="dialog-header"><h2 id="category-dialog-title">小冊子を作成</h2><button class="icon-button" type="button" data-close-dialog="category-dialog" aria-label="閉じる">×</button></div>
@@ -256,7 +271,7 @@
 
         <section class="help-section" aria-labelledby="help-sort">
           <h3 id="help-sort"><i class="bi bi-sort-down" aria-hidden="true"></i>小冊子を並べ替える</h3>
-          <ul class="help-list"><li>BOOKS右上で「更新順・名前順・登録順」を選択</li><li>更新順：支出の追加・編集・削除や、小冊子の編集で先頭へ</li><li>選んだ並び順は、このブラウザに保存</li><li>小冊子の編集画面からアーカイブ・復元が可能</li><li>BOOKSの「利用中」を「アーカイブ」に切り替えると保存した冊子を閲覧できます</li></ul>
+          <ul class="help-list"><li>BOOKS右上で「更新順・名前順・登録順」を選択</li><li>更新順：支出の追加・編集・削除や、小冊子の編集で先頭へ</li><li>選んだ並び順は、このブラウザに保存</li><li>小冊子の長押し・右クリック・「…」から編集やアーカイブ・復元が可能</li><li>グラフの右隣のARCHIVEページで保存した冊子を閲覧できます</li></ul>
         </section>
 
         <section class="help-section" aria-labelledby="help-receipt">
