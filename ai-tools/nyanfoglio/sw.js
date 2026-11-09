@@ -33,4 +33,3 @@ self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET" || !url.href.startsWith(self.registration.scope)) return;
   event.respondWith(caches.open(CACHE_NAME).then((cache) => cache.match(event.request, { ignoreSearch: event.request.mode === "navigate" })).then((cachedResponse) => cachedResponse || fetch(event.request)));
 });
-
