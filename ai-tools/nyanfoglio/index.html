@@ -169,9 +169,9 @@
       <ul id="breakdown-legend" class="breakdown-legend" aria-label="小冊子ごとの金額と割合"></ul>
     </dialog>
 
-    <dialog id="expense-dialog" class="app-dialog">
-      <form id="expense-form" novalidate>
-        <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
+    <dialog id="expense-dialog" class="app-dialog app-dialog--form" aria-labelledby="expense-dialog-title">
+      <div class="dialog-header"><h2 id="expense-dialog-title">支出を登録</h2><button class="icon-button" type="button" data-close-dialog="expense-dialog" aria-label="閉じる">×</button></div>
+      <form id="expense-form" class="dialog-scroll" novalidate>
         <input id="expense-id" type="hidden" />
         <div class="ocr-trigger">
           <button id="ocr-image-button" class="secondary-button" type="button"><i class="bi bi-receipt" aria-hidden="true"></i>レシートを読み取る</button>
@@ -199,9 +199,9 @@
         <button class="secondary-button" type="button" data-close-dialog="book-actions-dialog">キャンセル</button>
       </div>
     </dialog>
-    <dialog id="category-dialog" class="app-dialog">
-      <form id="category-form" novalidate>
-        <div class="dialog-header"><h2 id="category-dialog-title">小冊子を作成</h2><button class="icon-button" type="button" data-close-dialog="category-dialog" aria-label="閉じる">×</button></div>
+    <dialog id="category-dialog" class="app-dialog app-dialog--form" aria-labelledby="category-dialog-title">
+      <div class="dialog-header"><h2 id="category-dialog-title">小冊子を作成</h2><button class="icon-button" type="button" data-close-dialog="category-dialog" aria-label="閉じる">×</button></div>
+      <form id="category-form" class="dialog-scroll" novalidate>
         <input id="category-id" type="hidden" />
         <label>小冊子名<input id="category-name" type="text" autocomplete="off" required maxlength="40" placeholder="例：大阪旅行" /></label>
         <label>予算（円）<input id="category-budget" type="number" inputmode="numeric" min="0" step="1" placeholder="未設定の場合は空欄" /></label>
