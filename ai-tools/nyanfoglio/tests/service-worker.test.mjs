@@ -45,13 +45,13 @@ async function worker(path, scope, keys) {
 test('new worker caches existing shell files and preserves other apps’ caches', async () => {
   const scope = 'https://nyanmodel.com/ai-tools/nyanfoglio/';
   const prefix = `nyanfoglio:${scope}:`;
-  const app = await worker('../sw.js', scope, [`${prefix}v18`, `${prefix}v19`, 'workbox-jiro', 'nyanfoglio-v18']);
+  const app = await worker('../sw.js', scope, [`${prefix}v18`, `${prefix}v19`, `${prefix}v20`, 'workbox-jiro', 'nyanfoglio-v18']);
   await app.dispatch('install');
   await app.dispatch('activate');
-  assert.deepEqual(app.deleted, [`${prefix}v18`]);
+  assert.deepEqual(app.deleted, [`${prefix}v18`, `${prefix}v19`]);
   const response = await app.dispatch('fetch', { request: { url: `${scope}index.html`, method: 'GET' } });
   assert.equal(await response.text(), 'app shell');
-  assert.deepEqual(app.matched, [`${prefix}v19`]);
+  assert.deepEqual(app.matched, [`${prefix}v20`]);
   assert.equal(await app.dispatch('fetch', { request: { url: 'https://cdn.example/font.woff', method: 'GET' } }), undefined);
 });
 

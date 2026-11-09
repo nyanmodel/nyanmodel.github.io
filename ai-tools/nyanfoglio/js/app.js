@@ -26,7 +26,6 @@ let ocrRequestId = 0;
 let chartPeriod = "day";
 let selectedChartKey = null;
 let homePage = 0;
-let categoryViewMode = "active";
 
 const elements = {
   categorySort: document.querySelector("#category-sort"),
@@ -241,11 +240,13 @@ function updateHomePageIndicator() {
 
 let homePageScrollFrame = 0;
 function updateHomePageTransition(rawProgress) {
-  const progress = Math.max(0, Math.min(1, rawProgress));
-  const easedProgress = progress * progress * (3 - 2 * progress);
-  elements.homePageContents[0].style.opacity = String(1 - easedProgress);
-  elements.homePageContents[1].style.opacity = String(easedProgress);
-  const activePage = progress < 0.5 ? 0 : 1;
+  const progress = Math.max(0, Math.min(elements.homePagePanels.length - 1, rawProgress));
+  elements.homePageContents.forEach((content, index) => {
+    const distance = Math.min(1, Math.abs(progress - index));
+    content.style.opacity = String(1 - distance * distance * (3 - 2 * distance));
+  });
+  const activePage = Math.round(progress);
+  document.body.classList.toggle("archive-mode", activePage === 2);
   elements.homePagePanels.forEach((panel, index) => {
     const active = index === activePage;
     panel.inert = !active;
@@ -259,25 +260,28 @@ function handleHomePageScroll() {
     homePageScrollFrame = 0;
     const progress = elements.homePages.scrollLeft / Math.max(elements.homePages.clientWidth, 1);
     updateHomePageTransition(progress);
-    const nextPage = Math.max(0, Math.min(1, Math.round(progress)));
+    const nextPage = Math.max(0, Math.min(elements.homePagePanels.length - 1, Math.round(progress)));
     if (nextPage !== homePage) { homePage = nextPage; updateHomePageIndicator(); }
   });
 }
 
 function renderCategories() {
-  elements.categoryList.replaceChildren();
+  renderBookList(elements.categoryList, false);
+  renderBookList(document.querySelector("#archive-list"), true);
+}
+
+function renderBookList(list, archived) {
+  list.replaceChildren();
   elements.categorySort.value = ["updated", "name", "created"].includes(data.categorySort) ? data.categorySort : "updated";
-  document.querySelector("#book-view").value = categoryViewMode;
-  const archived = categoryViewMode === "archived";
   const categories = sortCategories(data.categories.filter(category => Boolean(category.archived) === archived), data.expenses, elements.categorySort.value);
   if (archived && !categories.length) {
     const empty = document.createElement("p");
     empty.className = "empty-state";
     empty.textContent = "アーカイブした小冊子はありません。小冊子の編集画面からアーカイブできます。";
-    elements.categoryList.append(empty);
+    list.append(empty);
     return;
   }
-  if (!categories.length) { elements.categoryList.append(elements.emptyCategories.content.cloneNode(true)); return; }
+  if (!categories.length) { list.append(elements.emptyCategories.content.cloneNode(true)); return; }
   categories.forEach((category) => {
     const card = document.createElement("button"); card.type = "button"; card.className = "category-card"; card.setAttribute("aria-label", `${category.name}を開く`);
     const budget = getCategoryBudget(category); const burden = calculateCategoryBurden(data.expenses, category.id); const expenseCount = data.expenses.filter((expense) => expense.categoryId === category.id).length;
@@ -300,7 +304,37 @@ function renderCategories() {
     } else {
       meta.className = "category-count"; meta.textContent = `${expenseCount}件`;
     }
-    card.append(icon, name, amount, meta); card.addEventListener("click", () => openCategory(category.id)); elements.categoryList.append(card);
+    card.append(icon, name, amount, meta);
+    const wrapper = document.createElement("div"); wrapper.className = "book-card-wrap";
+    const menu = document.createElement("button"); menu.type = "button"; menu.className = "book-menu-button";
+    menu.textContent = "…"; menu.setAttribute("aria-label", `${category.name}の操作`); menu.setAttribute("aria-haspopup", "dialog");
+    menu.addEventListener("click", () => openBookActions(category));
+    attachBookActions(card, category);
+    wrapper.append(card, menu); list.append(wrapper);
+  });
+}
+
+function attachBookActions(card, category) {
+  let timer = null, origin = null, suppressClick = false;
+  const cancelHold = () => { clearTimeout(timer); timer = null; };
+  card.addEventListener("pointerdown", event => {
+    if (!event.isPrimary || event.button !== 0) return;
+    cancelHold(); suppressClick = false;
+    origin = { x: event.clientX, y: event.clientY };
+    timer = setTimeout(() => { timer = null; suppressClick = true; openBookActions(category); }, 550);
+  });
+  card.addEventListener("pointermove", event => {
+    if (origin && Math.hypot(event.clientX - origin.x, event.clientY - origin.y) > 10) {
+      cancelHold(); suppressClick = true;
+    }
+  });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(type => card.addEventListener(type, cancelHold));
+  card.addEventListener("contextmenu", event => {
+    event.preventDefault(); cancelHold(); suppressClick = true; openBookActions(category);
+  });
+  card.addEventListener("click", event => {
+    if (suppressClick && event.detail !== 0) { event.preventDefault(); suppressClick = false; return; }
+    openCategory(category.id);
   });
 }
 
@@ -507,7 +541,7 @@ function saveCategory(event) {
   if (!Number.isInteger(budget) || budget < 0) { elements.categoryError.textContent = "予算は0円以上の整数で入力してください。"; return; }
   const id = elements.categoryId.value;
   if (id) { const category = getCategoryById(data.categories, id); Object.assign(category, { name, icon: selectedIcon, budget, updatedAt: new Date().toISOString() }); }
-  else { data.categories.push(createCategory(name, selectedIcon, data.categories.length, budget)); categoryViewMode = "active"; }
+  else { data.categories.push(createCategory(name, selectedIcon, data.categories.length, budget)); showHomePage(0, false); }
   elements.categoryDialog.close(); persistAndRender();
 }
 
@@ -572,16 +606,26 @@ function deleteCurrentCategory() {
   data.categories = data.categories.filter((category) => category.id !== categoryId); data.expenses = data.expenses.filter((expense) => expense.categoryId !== categoryId); elements.categoryDialog.close(); returnHome(); persistAndRender();
 }
 
+function toggleBookArchive(category) {
+  category.archived = !category.archived;
+  touchCategories(data.categories, [category.id]);
+  returnHome(); persistAndRender(); showHomePage(category.archived ? 2 : 0, false);
+}
+
+const bookActions = document.querySelector("#book-actions-dialog");
+let actionCategory = null;
+function openBookActions(category) {
+  actionCategory = category;
+  document.querySelector("#book-actions-title").textContent = category.name;
+  document.querySelector("#book-action-archive").textContent = category.archived ? "アーカイブから戻す" : "アーカイブ";
+  if (!bookActions.open) bookActions.showModal();
+}
+document.querySelector("#book-action-edit").addEventListener("click", () => { bookActions.close(); openCategoryDialog(actionCategory); });
+document.querySelector("#book-action-archive").addEventListener("click", () => { bookActions.close(); toggleBookArchive(actionCategory); });
 document.querySelector("#archive-category-button").addEventListener("click", () => {
   const category = getCategoryById(data.categories, elements.categoryId.value);
   if (!category) return;
-  category.archived = !category.archived;
-  touchCategories(data.categories, [category.id]);
-  categoryViewMode = category.archived ? "archived" : "active";
-  elements.categoryDialog.close(); returnHome(); persistAndRender();
-});
-document.querySelector("#book-view").addEventListener("change", event => {
-  categoryViewMode = event.target.value; renderCategories();
+  elements.categoryDialog.close(); toggleBookArchive(category);
 });
 document.querySelector("#chart-detail-sort").addEventListener("change", event => {
   data.chartDetailSort = event.target.value; persistAndRender();
